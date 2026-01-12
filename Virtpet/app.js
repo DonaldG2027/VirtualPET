@@ -149,6 +149,9 @@ app.get('/sockets', (req, res) => {
     sockdata = userLayout.getUserData(req.session);
     res.render('sockets', sockdata);
 });
+app.get('/store', (req,res)=>{
+    res.render("sockets")
+});
 //socket.io setup
 io.on('connection', (socket) => {
     logger.info('a user connected');
