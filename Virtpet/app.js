@@ -149,6 +149,10 @@ app.get('/sockets', (req, res) => {
     sockdata = userLayout.getUserData(req.session);
     res.render('sockets', sockdata);
 });
+app.get('/pet', midAuth, (req, res) => {
+    petdata = userLayout.getUserData(req.session);
+    res.render('pet', petdata);
+});
 //socket.io setup
 io.on('connection', (socket) => {
     logger.info('a user connected');
