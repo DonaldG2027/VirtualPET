@@ -1,6 +1,6 @@
 <%- include('partials/header') %>
 <body>
-    <p>Hallo!!! Youse name shalt be <%= user %>!</p>
+    <p>Hallo!!! Youse name shalt be <%= user %>! Let us maketh this pet!</p>
 <form id="uploadForm" action="/profile" method="POST" enctype="multipart/form-data">
     <input type="file" name="profilePic" id="profilePic" accept="image/*">
     <input type="hidden" name="uid" value="<%= uid %>">
@@ -10,8 +10,8 @@
 <br>
 <br>
 <div id="alluploads">
-<h1>Uploaded Files</h1>
-    <!-- Uploaded images will be displayed here -->
+<h1>Your Pet</h1>
+    <!-- Statistics about your pet will be displayed here -->
 </div>
 
 </body>
