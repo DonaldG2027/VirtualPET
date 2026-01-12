@@ -153,6 +153,9 @@ app.get('/pet', midAuth, (req, res) => {
     petdata = userLayout.getUserData(req.session);
     res.render('pet', petdata);
 });
+app.get('/store', (req,res) => {
+    res.render('store')
+});
 //socket.io setup
 io.on('connection', (socket) => {
     logger.info('a user connected');
