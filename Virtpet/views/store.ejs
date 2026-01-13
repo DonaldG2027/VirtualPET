@@ -1,20 +1,28 @@
 <%- include('partials/header') %>
 <body>
 <p>"HIIIIIIIII weary traveler may you peruse my wears HMMMMM?!?!"</p>
-<button id="buyer">
+<form>
+<button onclick="buyer()" id="buyer">
 Buy
 </button>
-<button id="seller">
+<button onclick="seller()" id="seller">
 Sell
 </button>
-<button id="runner">
+<button onclick="runner()" id="runner">
 RUN!
 </button>
+</form>
 </body>
 <script>
 //use onclick insed of addevent listner
-addEventListener.buyer()
-addEventListener.seller()
-addEventListener.runner()
+function buyer(){
+alert("buying");
+}
+function seller(){
+alert("selling");
+};
+function runner(){
+alert("running");
+};
 </script>
 <%- include('partials/footer') %>
