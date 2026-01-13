@@ -25,12 +25,12 @@ const API_KEY = process.env.API_KEY || "12345";
 const sqlite3 = require('sqlite3').verbose();   
 const SQLiteStore = require('connect-sqlite3')(session)
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
+destination: (req, file, cb) => {
     cb(null, 'db/uploads/');
-  },
-  filename: (req, file, cb) => {
+},
+filename: (req, file, cb) => {
     cb(null, Date.now() + '-' + file.originalname);
-  }
+}
 });
 const fileFilter = (req, file, cb) => {
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
@@ -72,28 +72,28 @@ const midAuth = require('./middleware/isAuthenticated');
 const mio = socketModule.createSocketServer(server, sessionMiddleware);
 app.get('/',midAuth, (req, res) => {
     const indexData = userLayout.getUserData(req.session);
-  res.render('index', { user: req.session.user});
+    res.render('index', { user: req.session.user});
 });
 
 app.get('/login', (req, res) => {
     if (req.query.token) {
-         let tokenData = jwt.decode(req.query.token);
-         req.session.token = tokenData;
-         req.session.user = tokenData.displayName;
-         let curdate= new Date();
-         let curtime= curdate.toISOString().slice(0, 19).replace('T', ' ');
-         logger.info(`Token for user ${tokenData.displayName} received at ${curtime}, expires at ${tokenData.exp}`);
-         logger.info(`User ${tokenData.displayName} logged in.`);
+        let tokenData = jwt.decode(req.query.token);
+        req.session.token = tokenData;
+        req.session.user = tokenData.displayName;
+        let curdate= new Date();
+        let curtime= curdate.toISOString().slice(0, 19).replace('T', ' ');
+        logger.info(`Token for user ${tokenData.displayName} received at ${curtime}, expires at ${tokenData.exp}`);
+        logger.info(`User ${tokenData.displayName} logged in.`);
          //save user to data bas if no exist
-         db.run('INSERT OR IGNORE INTO users (username,passwordHash,formbarId,lastupdate) VALUES (?, ?, ?, ?)', [tokenData.displayName, null, tokenData.id, curtime], function (err) {
+        db.run('INSERT OR IGNORE INTO users (username,passwordHash,formbarId,lastupdate) VALUES (?, ?, ?, ?)', [tokenData.displayName, null, tokenData.id, curtime], function (err) {
             if (err) {
                 logger.error(err.message);
             }
             logger.info(`User ${tokenData.displayName} added to database or already exists.`);});
-         
-              res.redirect('/');
+        
+            res.redirect('/');
         } else {
-         res.redirect(`${AUTH_URL}/oauth?redirectURL=${THIS_URL}`);
+        res.redirect(`${AUTH_URL}/oauth?redirectURL=${THIS_URL}`);
     };
 });
 app.post('/login', (req, res) => {
@@ -109,8 +109,8 @@ app.post('/login', (req, res) => {
                 logger.error(err.message);
             }
             logger.info(`User ${tokenData.displayName} added to database or already exists.`);});
-         
-              res.redirect('/');
+        
+            res.redirect('/');
         }
     else { logger.error('Formbar ID is required');}
 });
@@ -152,6 +152,17 @@ app.get('/sockets', (req, res) => {
 app.get('/pet', midAuth, (req, res) => {
     petdata = userLayout.getUserData(req.session);
     res.render('pet', petdata);
+});
+app.get('/chatroom', midAuth, (req, res) => {
+    chatdata = userLayout.getUserData(req.session);
+    res.render('chatroom', chatdata);
+});
+app.post('/chatroom/message', midAuth, (req, res) => {
+    const message = req.body.message;
+    const user = req.session.user;
+    io.emit('chat message', { user, message });
+    logger.info(`Chat message from ${user}: ${message}`);
+    res.sendStatus(200);
 });
 app.get('/store', (req,res) => {
     res.render('store')
