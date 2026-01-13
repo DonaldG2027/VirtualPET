@@ -1,28 +1,40 @@
 <%- include('partials/header') %>
 <body>
 <p>"HIIIIIIIII weary traveler may you peruse my wears HMMMMM?!?!"</p>
-<form>
-<button onclick="buyer()" id="buyer">
+<form id="storeForm" method="POST" action="/store">
+<button type="button" id="buyer">
 Buy
 </button>
-<button onclick="seller()" id="seller">
+<button type="button" id="seller">
 Sell
 </button>
-<button onclick="runner()" id="runner">
+<button type="button" id="runner">
 RUN!
 </button>
+<button type="submit" id="submit" >
+Submit
+</button>
+<input type="hidden" id="bresponse" name="buyresponse" value="">
+<input type="hidden" id="sresponse" name="sellresponse" value="">
 </form>
-</body>
 <script>
-//use onclick insed of addevent listner
-function buyer(){
-alert("buying");
-}
-function seller(){
-alert("selling");
-};
-function runner(){
-alert("running");
-};
+addEventListener('DOMContentLoaded', () => {
+    document.getElementById('buyer').addEventListener('click', () => {
+       let buyresponse=window.prompt('You chose to buy! Do you want item 1,2, or 3? price is same as number.(only type num no space)')
+       alert('You chose to buy item ' + buyresponse);
+       document.getElementById('bresponse').value = buyresponse;
+    });
+    document.getElementById('seller').addEventListener('click', () => {
+        let sellresponse=window.prompt('You chose to sell! What item do you want to sell? type iid (only type num no space)')
+        alert('You chose to sell item ' + sellresponse);
+        document.getElementById('sresponse').value = sellresponse;
+    });
+    document.getElementById('runner').addEventListener('click', () => {
+        alert('You ran away very quick...')
+        window.location.href = '/';
+    });
+});
 </script>
+</body>
+
 <%- include('partials/footer') %>

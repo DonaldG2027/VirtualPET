@@ -162,8 +162,17 @@ app.get('/store', (req,res) => {
     res.render('store')
 });
 app.post('/store', (req,res) => {
-    const action = req.body.action;
-    logger.info(`Store action received: ${action}`);
+   let buyresponse=req.body.buyresponse;
+   let sellresponse=req.body.sellresponse;
+   logger.info(`User ${req.session.user} buy response: ${buyresponse}, sell response: ${sellresponse}`);
+   if (buyresponse) {
+       //process buy
+       logger.info(`Processing buy of item ${buyresponse} for user ${req.session.user}`);
+   }
+    if (sellresponse) {
+        //process sell
+        logger.info(`Processing sell of item ${sellresponse} for user ${req.session.user}`);
+    }
 });
 //socket.io setup
 io.on('connection', (socket) => {
