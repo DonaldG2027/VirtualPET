@@ -57,7 +57,12 @@ const dbu = new sqlite3.Database('./db/uploads.db', (err) => {
     }
     logger.info('Connected to the uploaddatabase.');
 });
-
+const dbp = new sqlite3.Database('./db/virtpet.db', (err) => {
+    if (err) {
+        logger.error(err.message);
+    }
+    logger.info('Connected to the virtpet database.');
+});
 //middleware
 const sessionMiddleware= require('./middleware/session')
 const userapiroute= require('./routes/api/user')
@@ -166,6 +171,10 @@ app.post('/chatroom/message', midAuth, (req, res) => {
 });
 app.get('/store', (req,res) => {
     res.render('store')
+});
+app.post('/store', (req,res) => {
+    const action = req.body.action;
+    logger.info(`Store action received: ${action}`);
 });
 //socket.io setup
 io.on('connection', (socket) => {
