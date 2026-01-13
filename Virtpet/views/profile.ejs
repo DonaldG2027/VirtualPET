@@ -1,12 +1,21 @@
 <%- include('partials/header') %>
 <body>
     <p>Hallo!!! Youse name shalt be <%= user %>! Let us maketh this pet!</p>
-<form id="uploadForm" action="/profile" method="POST" enctype="multipart/form-data">
-    <input type="file" name="profilePic" id="profilePic" accept="image/*">
-    <input type="hidden" name="uid" value="<%= uid %>">
-    <input type="hidden" name="formbarId" value="<%= user %>">
-    <button type="submit">upload file</button>
-</form>
+    <!-- pet creation form -->
+    <form id="createPet" action="/profile" method="POST" enctype="multipart/form-data">
+        Pet Name: <input type="text" name="petName" required></input><br>
+        Pet Type:<br>
+        <input type="radio" id="dog" name="petType" value="dog" required>
+        <label for="dog">Dog</label><br>
+        <input type="radio" id="cat" name="petType" value="cat" required>
+        <label for="cat">Cat</label><br>
+        <input type="radio" id="bird" name="petType" value="bird" required>
+        <label for="bird">Bird</label><br>
+        Color <!-- using html and css-->
+        <input type="color" id="petColor" name="petColor" value="#ff0000"><br>
+        Upload Pet Image: <input type="file" name="petImage" accept="image/*" required><br>
+        <input type="submit" value="Create Pet">
+    </form>
 <br>
 <br>
 <div id="alluploads">
@@ -16,6 +25,7 @@
 
 </body>
 <script>
+    
     const alluploads = document.getElementById('alluploads');
     console.log(<%- JSON.stringify(uploads) %>);
     let ruploads = <%- JSON.stringify(uploads) %>;

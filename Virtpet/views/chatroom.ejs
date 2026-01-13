@@ -1,0 +1,34 @@
+<%- include('partials/header') %>
+<body>
+    <p>Chatroom content goes here. Talk to other users so you aren't as lonely as you are in real life.</p>
+    <br>
+    <div id="chatroomMessages"></div>
+    <form id="messagesForm">
+        <input type="text" id="chatroomInput" autocomplete="off" placeholder="Type your message here..." />
+        <button type="submit">Send</button>
+    </form>
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+    const form = document.getElementById('messagesForm');
+    const input = document.getElementById('chatroomInput');
+    const messagesDiv = document.getElementById('chatroomMessages');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (input.value) {
+            socket.emit('update', input.value);
+            input.value = '';
+        }
+    });
+
+    socket.on('update', function(msg) {
+        const msgElem = document.createElement('div');
+        // rearrange to show "user said: message"
+        msgElem.textContent = "<%- user %>" + " said: " + msg;
+        messagesDiv.appendChild(msgElem);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    });
+</script>
+<%- include('partials/footer') %>
