@@ -25,7 +25,7 @@ addEventListener('DOMContentLoaded', () => {
        document.getElementById('bresponse').value = buyresponse;
     });
     document.getElementById('seller').addEventListener('click', () => {
-        let sellresponse=window.prompt('You chose to sell! What item do you want to sell? type iid (only type num no space)')
+        let sellresponse=window.prompt('You chose to sell! What item do you want to sell? type number for item 1,2,3 (only type num no space)')
         alert('You chose to sell item ' + sellresponse);
         document.getElementById('sresponse').value = sellresponse;
     });

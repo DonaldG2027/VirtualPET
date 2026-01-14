@@ -203,11 +203,118 @@ app.post('/store', (req,res) => {
    if (buyresponse) {
        //process buy
        logger.info(`Processing buy of item ${buyresponse} for user ${req.session.user}`);
-   }
-    if (sellresponse) {
+       let uid = req.session.user;
+       console.log(`buyresponse: ${buyresponse}`);
+       if (buyresponse === '1')  {
+            dbp.run('INSERT OR IGNORE INTO playerinv (iid,itemS1) VALUES (?, ?)', [uid,buyresponse], function (err) {
+            if (err) {
+                logger.error(err.message);
+            }
+            logger.info(`Item ${buyresponse}`);
+            });
+            dbp.run('UPDATE playerinv SET money = money - 1 WHERE iid = ?', [uid], function (err) {
+                if (err) {
+                    logger.error(err.message);
+                }
+            });
+            dbp.run('UPDATE storeInv SET money = money + 1 WHERE sid = ?', [1], function (err) {
+                if (err) {
+                    logger.error(err.message);
+                }
+            }); 
+            
+        }
+       else if (buyresponse === '2') { 
+         dbp.run('INSERT OR IGNORE INTO playerinv (iid,itemS2) VALUES (?, ?)', [uid,buyresponse], function (err) {
+            if (err) {
+                logger.error(err.message);
+            }
+            });
+            dbp.run('UPDATE playerinv SET money = money - 2 WHERE iid = ?', [uid], function (err) {
+                if (err) {
+                    logger.error(err.message);
+                }
+            });
+            dbp.run('UPDATE storeInv SET money = money + 2 WHERE sid = ?', [1], function (err) {
+                if (err) {
+                    logger.error(err.message);
+                }
+            });
+        }
+       else if (buyresponse === '3') {
+         dbp.run('INSERT OR IGNORE INTO playerinv (iid,itemS3) VALUES (?, ?)', [uid,buyresponse], function (err) {
+            if (err) {
+                logger.error(err.message);
+            }
+            });
+            dbp.run('UPDATE playerinv SET money = money - 3 WHERE iid = ?', [uid], function (err) {
+                if (err) {
+                    logger.error(err.message);
+                }
+            });
+            dbp.run('UPDATE storeInv SET money = money + 3 WHERE sid = ?', [1], function (err) {
+                if (err) {
+                    logger.error(err.message);
+                }
+            }); 
+        }
+       else { logger.warn(`Invalid buy response(numbers or no spaces most likely): ${buyresponse}`); };
+      
+    };
+   
+   if (sellresponse) {
         //process sell
         logger.info(`Processing sell of item ${sellresponse} for user ${req.session.user}`);
-    }
+        let uid = req.session.user;
+        if (sellresponse === '1') { 
+            dbp.run('UPDATE playerinv SET itemS1 = NULL WHERE iid = ? AND itemS1 = ?', [uid,sellresponse], function (err) {
+                if (err) { logger.error(err.message); }
+                });
+            dbp.run('UPDATE playerinv SET money = money + 1 WHERE iid = ?', [uid], function (err) {
+                if (err) {
+                    logger.error(err.message);
+                }
+            });
+            dbp.run('UPDATE storeInv SET money = money - 1 WHERE sid = ?', [1], function (err) {
+                if (err) {
+                    logger.error(err.message);
+                }
+            });
+        }
+        else if (sellresponse === '2') {
+            dbp.run('UPDATE playerinv SET itemS2 = NULL WHERE iid = ? AND itemS2 = ?', [uid,sellresponse], function (err) {
+                if (err) { logger.error(err.message); }
+            });
+            dbp.run('UPDATE playerinv SET money = money + 2 WHERE iid = ?', [uid], function (err) {
+                    if (err) {
+                        logger.error(err.message);
+                    }
+            });
+            dbp.run('UPDATE storeInv SET money = money - 2 WHERE sid = ?', [1], function (err) {
+                    if (err) {
+                        logger.error(err.message);
+                    }
+            });
+            }
+        else if (sellresponse === '3') {
+            dbp.run('UPDATE playerinv SET itemS3 = NULL WHERE iid = ? AND itemS3 = ?', [uid,sellresponse], function (err) {
+                if (err) { logger.error(err.message); } 
+            });
+            dbp.run('UPDATE playerinv SET money = money + 3 WHERE iid = ?', [uid], function (err) {
+                    if (err) {
+                        logger.error(err.message);
+                    }
+                });
+            dbp.run('UPDATE storeInv SET money = money - 3 WHERE sid = ?', [1], function (err) {
+                    if (err) {
+                        logger.error(err.message);
+                    }
+                });
+            }
+        
+        else { logger.warn(`Invalid sell response(numbers or no spaces most likely): ${sellresponse}`);};
+   
+   };
 });
 //socket.io setup
 io.on('connection', (socket) => {
