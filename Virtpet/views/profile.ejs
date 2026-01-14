@@ -2,6 +2,21 @@
 <body>
     <p>Hallo!!! Youse name shalt be <%= user %>! Let us maketh this pet!</p>
     <!-- pet creation form -->
+    <% if (pet) { %>
+        <!--display pet stats-->
+        <div id="yourpetstats">
+            <h1>Your Pet: <%= pet.name %></h1>
+            <p>Type: <%= pet.type %></p>
+            <p>Hunger: <%= pet.hunger %>/100</p>
+            <p>Joy: <%= pet.joy %>/100</p>
+            <p>Color: <span style="background-color: <%= pet.color %>; padding: 5px;"><%= pet.color %></span></p>
+
+            <!-- interacting with the pet-->
+            <button onclick="feedPet()">Feed your pet</button>
+            <button onclick="playWithPet()">Play with your pet</button>
+        </div>
+    <% } else { %>
+        <p>You do not have a pet yet. Please create one below.</p>
     <form id="createPet" action="/profile" method="POST" enctype="multipart/form-data">
         Pet Name: <input type="text" name="petName" required></input><br>
         Pet Type:<br>
@@ -16,12 +31,8 @@
         Upload Pet Image: <input type="file" name="petImage" accept="image/*" required><br>
         <input type="submit" value="Create Pet">
     </form>
+    <% } %>
 <br>
-<br>
-<div id="yourpetstats">
-<h1>Your Pet</h1>
-    <!-- Statistics about your pet will be displayed here -->
-</div>
 
 </body>
 <script>   

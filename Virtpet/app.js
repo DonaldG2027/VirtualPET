@@ -124,16 +124,40 @@ app.get('/logout', (req, res) => {
     res.redirect('/login');
 });
 app.get('/profile', midAuth, (req, res) => {
-    dbu.all('SELECT * FROM Uploads', (err, rows) => {
+    dbu.all('SELECT * FROM Uploads', (err, uploads) => {
         if (err) {
             logger.error(err.message);
             res.status(500).send('Error retrieving uploads');
-        } 
-        logger.info(`Uploads retrieved for user ${req.session.user}`);
-    const profileData = userLayout.getProfileData(req.session, rows);
-    res.render('profile', profileData);});
+            return;
+        }
+        
+        // Getting the user's pet 
+        dbp.get('SELECT * FROM "owned pets" LIMIT 1', (err, pet) => {
+            if (err) {
+                logger.error(err.message);
+                res.status(500).send('Error retrieving pet');
+                return;
+            }
+        // getting uploads
+        dbu.all('SELECT * FROM Uploads', (err, uploads) => {
+            if (err) {
+                logger.error('Uploads query error:', err.message);
+                uploads = []; //default to empty array on error
+            }
+            // prepare profile data
+            const profileData = userLayout.getProfileData(req.session, uploads);
+            profileData.pet = pet; // adding pet data to profileData
+            // Debug logs
+            console.log('Pet Data:', pet);
+            console.log('User:', req.session.user);
+
+            res.render('profile', profileData);
+        });
+    });
 });
-app.post('/profile', upload.single('petImage), (req, res) => {
+});
+// handling creating the pets
+app.post('/profile', upload.single('petImage'), (req, res) => {
     logger.info('File upload request received');
     logger.info('req.body:', req.body);
     logger.info('req.file:', req.file);
@@ -179,32 +203,12 @@ app.post('/store', (req,res) => {
    if (buyresponse) {
        //process buy
        logger.info(`Processing buy of item ${buyresponse} for user ${req.session.user}`);
-       let uid = req.body.uid;
-       if (buyresponse === '1') { dbp.run('INSERT OR IGNORE INTO playerinv (iid,itemS1) VALUES (?, ?)', [uid,buyresponse], function (err) {
-            if (err) {
-                logger.error(err.message);
-            }
-            });
-            dbp.run('UPDATE playerinv SET money = money - 1 WHERE iid = ?', [uid], function (err) {
-                if (err) {
-                    logger.error(err.message);
-                }
-            });
-            dbp.run('UPDATE storeInv SET money = money + 1 WHERE sid = ?', [1], function (err) {
-                if (err) {
-                    logger.error(err.message);
-                }
-            }); 
-            
-        }
-       else if (buyresponse === '2') { }
-       else if (buyresponse === '3') { }
-       else { logger.warn(`Invalid buy response(numbers or no spaces): ${buyresponse}`); }
-   
-   if (sellresponse) {
+   }
+    if (sellresponse) {
         //process sell
         logger.info(`Processing sell of item ${sellresponse} for user ${req.session.user}`);
-    }}});
+    }
+});
 //socket.io setup
 io.on('connection', (socket) => {
     logger.info('a user connected');
