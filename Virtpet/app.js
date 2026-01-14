@@ -133,7 +133,7 @@ app.get('/profile', midAuth, (req, res) => {
     const profileData = userLayout.getProfileData(req.session, rows);
     res.render('profile', profileData);});
 });
-app.post('/profile', upload.single('profilePic'), (req, res) => {
+app.post('/profile', upload.single('petImage), (req, res) => {
     logger.info('File upload request received');
     logger.info('req.body:', req.body);
     logger.info('req.file:', req.file);
