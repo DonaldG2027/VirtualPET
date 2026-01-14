@@ -124,16 +124,40 @@ app.get('/logout', (req, res) => {
     res.redirect('/login');
 });
 app.get('/profile', midAuth, (req, res) => {
-    dbu.all('SELECT * FROM Uploads', (err, rows) => {
+    dbu.all('SELECT * FROM Uploads', (err, uploads) => {
         if (err) {
             logger.error(err.message);
             res.status(500).send('Error retrieving uploads');
-        } 
-        logger.info(`Uploads retrieved for user ${req.session.user}`);
-    const profileData = userLayout.getProfileData(req.session, rows);
-    res.render('profile', profileData);});
+            return;
+        }
+        
+        // Getting the user's pet 
+        dbp.get('SELECT * FROM "owned pets" LIMIT 1', (err, pet) => {
+            if (err) {
+                logger.error(err.message);
+                res.status(500).send('Error retrieving pet');
+                return;
+            }
+        // getting uploads
+        dbu.all('SELECT * FROM Uploads', (err, uploads) => {
+            if (err) {
+                logger.error('Uploads query error:', err.message);
+                uploads = []; //default to empty array on error
+            }
+            // prepare profile data
+            const profileData = userLayout.getProfileData(req.session, uploads);
+            profileData.pet = pet; // adding pet data to profileData
+            // Debug logs
+            console.log('Pet Data:', pet);
+            console.log('User:', req.session.user);
+
+            res.render('profile', profileData);
+        });
+    });
 });
-app.post('/profile', upload.single('petImage), (req, res) => {
+});
+// handling creating the pets
+app.post('/profile', upload.single('petImage'), (req, res) => {
     logger.info('File upload request received');
     logger.info('req.body:', req.body);
     logger.info('req.file:', req.file);
