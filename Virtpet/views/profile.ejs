@@ -6,7 +6,6 @@
         <!--display pet stats-->
         <div id="yourpetstats">
             <h1>Your Pet: <%= pet.name %></h1>
-            <p>Type: <%= pet.type %></p>
             <p>Hunger: <%= pet.hunger %>/100</p>
             <p>Joy: <%= pet.joy %>/100</p>
             <p>Color: <span style="background-color: <%= pet.color %>; padding: 5px;"><%= pet.color %></span></p>
@@ -19,34 +18,46 @@
         <p>You do not have a pet yet. Please create one below.</p>
     <form id="createPet" action="/profile" method="POST" enctype="multipart/form-data">
         Pet Name: <input type="text" name="petName" required></input><br>
-        Pet Type:<br>
-        <input type="radio" id="dog" name="petType" value="dog" required>
-        <label for="dog">Dog</label><br>
-        <input type="radio" id="cat" name="petType" value="cat" required>
-        <label for="cat">Cat</label><br>
-        <input type="radio" id="bird" name="petType" value="bird" required>
-        <label for="bird">Bird</label><br>
-        Color <!-- using html and css-->
-        <input type="color" id="petColor" name="petColor" value="#ff0000"><br>
-        Upload Pet Image: <input type="file" name="petImage" accept="image/*" required><br>
+        <!-- using html and css for colors-->
+        Color: <input type="color" id="petColor" name="petColor" value="#ff0000"><br>
         <input type="submit" value="Create Pet">
     </form>
     <% } %>
-<br>
+    <br>
+    <br>
+    <a href="../index">Back to Home</a>
 
 </body>
 <script>   
-    
-    const alluploads = document.getElementById('alluploads');
-    console.log(<%- JSON.stringify(uploads) %>);
-    let ruploads = <%- JSON.stringify(uploads) %>;
-    console.log(ruploads);
-    console.log('First upload:', ruploads[0]);
-    console.log('Upload properties:', Object.keys(ruploads[0]));
-    ruploads.forEach(upload => {
-        const filepathe = document.createElement('p');
-        filepathe.textContent = upload.upload;
-        alluploads.appendChild(filepathe);
-    });
+    // feed pet function placeholder
+    function feedPet() {
+        fetch('/feed-pet', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Your pet has been fed!');
+                location.reload();
+            } else {
+                alert('Error feeding pet.');
+            }
+        });
+    }
+    // play with pet function placeholder
+    function playWithPet() {
+        fetch('/play-with-pet', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('You played with your pet!');
+                location.reload();
+            } else {
+                alert('Error playing with pet.');
+            }
+        });
+    }
 </script>
 <%- include('partials/footer') %>

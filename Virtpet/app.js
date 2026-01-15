@@ -119,61 +119,49 @@ app.post('/login', (req, res) => {
         }
     else { logger.error('Formbar ID is required');}
 });
+app.get('/index', midAuth, (req, res) => {
+    const indexData = userLayout.getUserData(req.session);
+    res.render('index', indexData);
+});
 app.get('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/login');
 });
 app.get('/profile', midAuth, (req, res) => {
-    dbu.all('SELECT * FROM Uploads', (err, uploads) => {
+    // getting first pet
+    dbp.get('SELECT * FROM "owned pets" LIMIT 1', (err, pet) => {
         if (err) {
-            logger.error(err.message);
-            res.status(500).send('Error retrieving uploads');
-            return;
+            logger.error('Pet query error: ' + err.message);
+            res.status(500).send('Error retrieving pet data');
         }
-        
-        // Getting the user's pet 
-        dbp.get('SELECT * FROM "owned pets" LIMIT 1', (err, pet) => {
-            if (err) {
-                logger.error(err.message);
-                res.status(500).send('Error retrieving pet');
-                return;
-            }
-        // getting uploads
-        dbu.all('SELECT * FROM Uploads', (err, uploads) => {
-            if (err) {
-                logger.error('Uploads query error:', err.message);
-                uploads = []; //default to empty array on error
-            }
-            // prepare profile data
-            const profileData = userLayout.getProfileData(req.session, uploads);
-            profileData.pet = pet; // adding pet data to profileData
-            // Debug logs
-            console.log('Pet Data:', pet);
-            console.log('User:', req.session.user);
 
-            res.render('profile', profileData);
-        });
+        const profileData = userLayout.getProfileData(req.session, []);
+        profileData.pet = pet;
+
+        res.render('profile', profileData);
     });
-});
 });
 // handling creating the pets
 app.post('/profile', upload.single('petImage'), (req, res) => {
-    logger.info('File upload request received');
-    logger.info('req.body:', req.body);
-    logger.info('req.file:', req.file);
-    logger.info('Content-Type:', req.get('Content-Type'));
-    let curupload = req.file.path;
-    logger.info('Current upload:', curupload);
-    let uid = req.body.uid;
-    dbu.run('INSERT INTO Uploads (uid, upload) VALUES (?, ?)', [uid, curupload], function (err) {
-        if (err) {
-            logger.error(err.message);
-            res.status(500).send('Error uploading file');
-        } else {
-            logger.info(`File uploaded by user ${uid} at ${new Date().toISOString()}`);
-            res.redirect('/profile');
-        }
-    });});
+    const petName = req.body.petName;
+    const petColor = req.body.petColor;
+    const owner = req.session.user; // using the username as owner just for simplicity
+    // initial stats from when the pet is created
+    const initialHunger = 50;
+    const initialJoy = 50;
+    
+    //insert into virtpet database
+    dbp.run('INSERT INTO "owned pets" (name, hunger, joy, color) VALUES (?, ?, ?, ?)',
+        [petName, initialHunger, initialJoy, petColor], function (err) {
+            if (err) {
+                logger.error(err.message);
+                res.status(500).send('Error creating pet');
+            } else {
+                logger.info(`Pet ${petName} created with PID ${this.lastID}`);
+                res.redirect('/profile');
+            }
+        });
+});
 app.get('/sockets', (req, res) => {
     sockdata = userLayout.getUserData(req.session);
     res.render('sockets', sockdata);
