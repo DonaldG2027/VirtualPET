@@ -206,11 +206,13 @@ app.post('/store', (req,res) => {
        let uid = req.session.user;
        console.log(`buyresponse: ${buyresponse}`);
        if (buyresponse === '1')  {
-            dbp.run('INSERT OR IGNORE INTO playerinv (iid,itemS1) VALUES (?, ?)', [uid,buyresponse], function (err) {
+        logger.info(`Buying item 1 ${buyresponse}`);
+            dbp.run('Update playerinv SET itemS1 = ? WHERE iid = ?', [buyresponse, uid], function (err) {
             if (err) {
                 logger.error(err.message);
             }
             logger.info(`Item ${buyresponse}`);
+            buyresponse='';
             });
             dbp.run('UPDATE playerinv SET money = money - 1 WHERE iid = ?', [uid], function (err) {
                 if (err) {
@@ -225,10 +227,11 @@ app.post('/store', (req,res) => {
             
         }
        else if (buyresponse === '2') { 
-         dbp.run('INSERT OR IGNORE INTO playerinv (iid,itemS2) VALUES (?, ?)', [uid,buyresponse], function (err) {
+         dbp.run('UPDATE playerinv SET itemS2 = ? WHERE iid = ?', [buyresponse, uid], function (err) {
             if (err) {
                 logger.error(err.message);
             }
+            buyresponse='';
             });
             dbp.run('UPDATE playerinv SET money = money - 2 WHERE iid = ?', [uid], function (err) {
                 if (err) {
@@ -242,10 +245,11 @@ app.post('/store', (req,res) => {
             });
         }
        else if (buyresponse === '3') {
-         dbp.run('INSERT OR IGNORE INTO playerinv (iid,itemS3) VALUES (?, ?)', [uid,buyresponse], function (err) {
+         dbp.run('UPDATE playerinv SET itemS3 = ? WHERE iid = ?', [buyresponse, uid], function (err) {
             if (err) {
                 logger.error(err.message);
             }
+            buyresponse='';
             });
             dbp.run('UPDATE playerinv SET money = money - 3 WHERE iid = ?', [uid], function (err) {
                 if (err) {
@@ -267,9 +271,10 @@ app.post('/store', (req,res) => {
         logger.info(`Processing sell of item ${sellresponse} for user ${req.session.user}`);
         let uid = req.session.user;
         if (sellresponse === '1') { 
-            dbp.run('UPDATE playerinv SET itemS1 = NULL WHERE iid = ? AND itemS1 = ?', [uid,sellresponse], function (err) {
+            dbp.run('UPDATE playerinv SET itemS1 = 0 WHERE iid = ? AND itemS1 = ?', [uid,sellresponse], function (err) {
                 if (err) { logger.error(err.message); }
-                });
+                sellresponse='';
+            });
             dbp.run('UPDATE playerinv SET money = money + 1 WHERE iid = ?', [uid], function (err) {
                 if (err) {
                     logger.error(err.message);
@@ -282,8 +287,9 @@ app.post('/store', (req,res) => {
             });
         }
         else if (sellresponse === '2') {
-            dbp.run('UPDATE playerinv SET itemS2 = NULL WHERE iid = ? AND itemS2 = ?', [uid,sellresponse], function (err) {
+            dbp.run('UPDATE playerinv SET itemS2 = 0 WHERE iid = ? AND itemS2 = ?', [uid,sellresponse], function (err) {
                 if (err) { logger.error(err.message); }
+                sellresponse='';
             });
             dbp.run('UPDATE playerinv SET money = money + 2 WHERE iid = ?', [uid], function (err) {
                     if (err) {
@@ -297,8 +303,9 @@ app.post('/store', (req,res) => {
             });
             }
         else if (sellresponse === '3') {
-            dbp.run('UPDATE playerinv SET itemS3 = NULL WHERE iid = ? AND itemS3 = ?', [uid,sellresponse], function (err) {
+            dbp.run('UPDATE playerinv SET itemS3 = 0 WHERE iid = ? AND itemS3 = ?', [uid,sellresponse], function (err) {
                 if (err) { logger.error(err.message); } 
+                sellresponse='';
             });
             dbp.run('UPDATE playerinv SET money = money + 3 WHERE iid = ?', [uid], function (err) {
                     if (err) {
