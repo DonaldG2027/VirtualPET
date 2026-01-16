@@ -179,8 +179,18 @@ app.get('/sockets', (req, res) => {
     res.render('sockets', sockdata);
 });
 app.get('/pet', midAuth, (req, res) => {
-    petdata = userLayout.getUserData(req.session);
-    res.render('pet', petdata);
+    // Get pet data for the pet page
+    dbp.get('SELECT * FROM "owned pets" LIMIT 1', (err, pet) => {
+        if (err) {
+            logger.error('Pet query error:', err.message);
+        }
+        
+        const petData = userLayout.getUserData(req.session);
+        petData.pet = pet; // This line is crucial!
+        
+        console.log('Pet page - Pet Data:', pet); // Debug log
+        res.render('pet', petData); // Pass petData, not just petdata
+    });
 });
 app.get('/chatroom', midAuth, (req, res) => {
     chatdata = userLayout.getUserData(req.session);
@@ -324,46 +334,54 @@ app.post('/store', (req,res) => {
     res.redirect('/store');
 });
 // feed pet route
-app.post('/feed-pet', midAuth, (req, res) => {
-    // get current pet
+// Feed pet route
+app.post('/pet/feed', midAuth, (req, res) => {
     dbp.get('SELECT * FROM "owned pets" LIMIT 1', (err, pet) => {
         if (err || !pet) {
             logger.error('Error finding pet:', err?.message);
-            return res.status(500).send('Error finding pet');
+            return res.status(500).send('Pet not found');
         }
-        // update pet hunger
-        const newHunger = Math.min(pet.hunger + 10, 100);
-        dbp.run('UPDATE "owned pets" SET hunger = ? WHERE id = ?', [newHunger, pet.id], function (err) {
+        
+        // Increase hunger (max 100)
+        const newHunger = Math.min(pet.hunger + 20, 100);
+        
+        dbp.run('UPDATE "owned pets" SET hunger = ? WHERE pid = ?', 
+            [newHunger, pet.pid], function(err) {
             if (err) {
                 logger.error('Error feeding pet:', err.message);
-                return res.status(500).send('Error feeding pet');
+                return res.status(500).send('Failed to feed pet');
             }
+            
             logger.info(`Pet ${pet.name} fed. Hunger: ${pet.hunger} -> ${newHunger}`);
-            res.redirect('/profile');
+            res.redirect('/pet'); // Redirect back to pet page
         });
     });
 });
-// playing with the pet route
-app.post('/play-pet', midAuth, (req, res) => {
-    // get current pet
+
+// Play with pet route  
+app.post('/pet/play', midAuth, (req, res) => {
     dbp.get('SELECT * FROM "owned pets" LIMIT 1', (err, pet) => {
         if (err || !pet) {
             logger.error('Error finding pet:', err?.message);
-            return res.status(500).send('Error finding pet');
+            return res.status(500).send('Pet not found');
         }
-        // update pet happiness
+        
+        // Increase joy (max 100)
         const newJoy = Math.min(pet.joy + 15, 100);
-        dbp.run('UPDATE "owned pets" SET joy = ? WHERE id = ?', [newJoy, pet.id], function (err) {
+        
+        dbp.run('UPDATE "owned pets" SET joy = ? WHERE pid = ?', 
+            [newJoy, pet.pid], function(err) {
             if (err) {
                 logger.error('Error playing with pet:', err.message);
-                return res.status(500).send('Error playing with pet');
+                return res.status(500).send('Failed to play with pet');
             }
-            logger.info(`Pet ${pet.name} played with. Joy: ${pet.joy} -> ${newJoy}`);
-            res.json({ success: true, newJoy: newJoy });
-            res.redirect('/profile');
+            
+            logger.info(`Played with pet ${pet.name}. Joy: ${pet.joy} -> ${newJoy}`);
+            res.redirect('/pet'); // Redirect back to pet page
         });
     });
 });
+
 //socket.io setup
 io.on('connection', (socket) => {
     logger.info('a user connected');
