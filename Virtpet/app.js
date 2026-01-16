@@ -321,6 +321,7 @@ app.post('/store', (req,res) => {
         else { logger.warn(`Invalid sell response(numbers or no spaces most likely): ${sellresponse}`);};
         
     };
+    res.redirect('/store');
 });
 // feed pet route
 app.post('/feed-pet', midAuth, (req, res) => {
