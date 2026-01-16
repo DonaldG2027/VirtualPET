@@ -179,16 +179,8 @@ app.get('/sockets', (req, res) => {
     res.render('sockets', sockdata);
 });
 app.get('/pet', midAuth, (req, res) => {
-    dbp.get('SELECT * FROM "owned pets" LIMIT 1', (err, pet) => {
-        if (err) {
-            logger.error('Pet query error:', err.message);
-        }
-        const petData = userLayout.getUserData(req.session);
-        petData.pet = pet;
-
-        console.log('Pet page = Pet data:', pet);
-        res.render('pet', petData);
-    });
+    petdata = userLayout.getUserData(req.session);
+    res.render('pet', petdata);
 });
 app.get('/chatroom', midAuth, (req, res) => {
     chatdata = userLayout.getUserData(req.session);
@@ -238,6 +230,7 @@ app.post('/store', (req,res) => {
             if (err) {
                 logger.error(err.message);
             }
+            logger.info(`Item ${buyresponse}`);
             });
             dbp.run('UPDATE playerinv SET money = money - 2 WHERE iid = ?', [uid], function (err) {
                 if (err) {
@@ -255,6 +248,7 @@ app.post('/store', (req,res) => {
             if (err) {
                 logger.error(err.message);
             }
+            logger.info(`Item ${buyresponse}`);
             });
             dbp.run('UPDATE playerinv SET money = money - 3 WHERE iid = ?', [uid], function (err) {
                 if (err) {
@@ -278,6 +272,7 @@ app.post('/store', (req,res) => {
         if (sellresponse === '1') { 
             dbp.run('UPDATE playerinv SET itemS1 = 0 WHERE iid = ?', [uid], function (err) {
                 if (err) { logger.error(err.message); }
+                logger.info(`Item ${sellresponse} sold`);
             });
             dbp.run('UPDATE playerinv SET money = money + 1 WHERE iid = ?', [uid], function (err) {
                 if (err) {
@@ -293,6 +288,7 @@ app.post('/store', (req,res) => {
         else if (sellresponse === '2') {
             dbp.run('UPDATE playerinv SET itemS2 = 0 WHERE iid = ?', [uid], function (err) {
                 if (err) { logger.error(err.message); }
+                logger.info(`Item ${sellresponse} sold`);
             });
             dbp.run('UPDATE playerinv SET money = money + 2 WHERE iid = ?', [uid], function (err) {
                     if (err) {
@@ -308,6 +304,7 @@ app.post('/store', (req,res) => {
         else if (sellresponse === '3') {
             dbp.run('UPDATE playerinv SET itemS3 = 0 WHERE iid = ?', [uid], function (err) {
                 if (err) { logger.error(err.message); } 
+                logger.info(`Item ${sellresponse} sold`);
             });
             dbp.run('UPDATE playerinv SET money = money + 3 WHERE iid = ?', [uid], function (err) {
                     if (err) {
@@ -322,8 +319,9 @@ app.post('/store', (req,res) => {
             }
         
         else { logger.warn(`Invalid sell response(numbers or no spaces most likely): ${sellresponse}`);};
-
+        
     };
+    res.redirect('/store');
 });
 // feed pet route
 app.post('/feed-pet', midAuth, (req, res) => {
