@@ -119,49 +119,61 @@ app.post('/login', (req, res) => {
         }
     else { logger.error('Formbar ID is required');}
 });
-app.get('/index', midAuth, (req, res) => {
-    const indexData = userLayout.getUserData(req.session);
-    res.render('index', indexData);
-});
 app.get('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/login');
 });
 app.get('/profile', midAuth, (req, res) => {
-    // getting first pet
-    dbp.get('SELECT * FROM "owned pets" LIMIT 1', (err, pet) => {
+    dbu.all('SELECT * FROM Uploads', (err, uploads) => {
         if (err) {
-            logger.error('Pet query error: ' + err.message);
-            res.status(500).send('Error retrieving pet data');
+            logger.error(err.message);
+            res.status(500).send('Error retrieving uploads');
+            return;
         }
+        
+        // Getting the user's pet 
+        dbp.get('SELECT * FROM "owned pets" LIMIT 1', (err, pet) => {
+            if (err) {
+                logger.error(err.message);
+                res.status(500).send('Error retrieving pet');
+                return;
+            }
+        // getting uploads
+        dbu.all('SELECT * FROM Uploads', (err, uploads) => {
+            if (err) {
+                logger.error('Uploads query error:', err.message);
+                uploads = []; //default to empty array on error
+            }
+            // prepare profile data
+            const profileData = userLayout.getProfileData(req.session, uploads);
+            profileData.pet = pet; // adding pet data to profileData
+            // Debug logs
+            console.log('Pet Data:', pet);
+            console.log('User:', req.session.user);
 
-        const profileData = userLayout.getProfileData(req.session, []);
-        profileData.pet = pet;
-
-        res.render('profile', profileData);
+            res.render('profile', profileData);
+        });
     });
+});
 });
 // handling creating the pets
 app.post('/profile', upload.single('petImage'), (req, res) => {
-    const petName = req.body.petName;
-    const petColor = req.body.petColor;
-    const owner = req.session.user; // using the username as owner just for simplicity
-    // initial stats from when the pet is created
-    const initialHunger = 50;
-    const initialJoy = 50;
-    
-    //insert into virtpet database
-    dbp.run('INSERT INTO "owned pets" (name, hunger, joy, color) VALUES (?, ?, ?, ?)',
-        [petName, initialHunger, initialJoy, petColor], function (err) {
-            if (err) {
-                logger.error(err.message);
-                res.status(500).send('Error creating pet');
-            } else {
-                logger.info(`Pet ${petName} created with PID ${this.lastID}`);
-                res.redirect('/profile');
-            }
-        });
-});
+    logger.info('File upload request received');
+    logger.info('req.body:', req.body);
+    logger.info('req.file:', req.file);
+    logger.info('Content-Type:', req.get('Content-Type'));
+    let curupload = req.file.path;
+    logger.info('Current upload:', curupload);
+    let uid = req.body.uid;
+    dbu.run('INSERT INTO Uploads (uid, upload) VALUES (?, ?)', [uid, curupload], function (err) {
+        if (err) {
+            logger.error(err.message);
+            res.status(500).send('Error uploading file');
+        } else {
+            logger.info(`File uploaded by user ${uid} at ${new Date().toISOString()}`);
+            res.redirect('/profile');
+        }
+    });});
 app.get('/sockets', (req, res) => {
     sockdata = userLayout.getUserData(req.session);
     res.render('sockets', sockdata);
@@ -194,7 +206,8 @@ app.post('/store', (req,res) => {
        let uid = req.session.user;
        console.log(`buyresponse: ${buyresponse}`);
        if (buyresponse === '1')  {
-            dbp.run('INSERT OR IGNORE INTO playerinv (iid,itemS1) VALUES (?, ?)', [uid,buyresponse], function (err) {
+        logger.info(`Buying item 1 ${buyresponse}`);
+            dbp.run('Update playerinv SET itemS1 = 1 WHERE iid = ?', [uid], function (err) {
             if (err) {
                 logger.error(err.message);
             }
@@ -213,7 +226,7 @@ app.post('/store', (req,res) => {
             
         }
        else if (buyresponse === '2') { 
-         dbp.run('INSERT OR IGNORE INTO playerinv (iid,itemS2) VALUES (?, ?)', [uid,buyresponse], function (err) {
+         dbp.run('UPDATE playerinv SET itemS2 = 1 WHERE iid = ?', [uid], function (err) {
             if (err) {
                 logger.error(err.message);
             }
@@ -230,7 +243,7 @@ app.post('/store', (req,res) => {
             });
         }
        else if (buyresponse === '3') {
-         dbp.run('INSERT OR IGNORE INTO playerinv (iid,itemS3) VALUES (?, ?)', [uid,buyresponse], function (err) {
+         dbp.run('UPDATE playerinv SET itemS3 = 1 WHERE iid = ?', [uid], function (err) {
             if (err) {
                 logger.error(err.message);
             }
@@ -255,9 +268,9 @@ app.post('/store', (req,res) => {
         logger.info(`Processing sell of item ${sellresponse} for user ${req.session.user}`);
         let uid = req.session.user;
         if (sellresponse === '1') { 
-            dbp.run('UPDATE playerinv SET itemS1 = NULL WHERE iid = ? AND itemS1 = ?', [uid,sellresponse], function (err) {
+            dbp.run('UPDATE playerinv SET itemS1 = 0 WHERE iid = ?', [uid], function (err) {
                 if (err) { logger.error(err.message); }
-                });
+            });
             dbp.run('UPDATE playerinv SET money = money + 1 WHERE iid = ?', [uid], function (err) {
                 if (err) {
                     logger.error(err.message);
@@ -270,7 +283,7 @@ app.post('/store', (req,res) => {
             });
         }
         else if (sellresponse === '2') {
-            dbp.run('UPDATE playerinv SET itemS2 = NULL WHERE iid = ? AND itemS2 = ?', [uid,sellresponse], function (err) {
+            dbp.run('UPDATE playerinv SET itemS2 = 0 WHERE iid = ?', [uid], function (err) {
                 if (err) { logger.error(err.message); }
             });
             dbp.run('UPDATE playerinv SET money = money + 2 WHERE iid = ?', [uid], function (err) {
@@ -285,7 +298,7 @@ app.post('/store', (req,res) => {
             });
             }
         else if (sellresponse === '3') {
-            dbp.run('UPDATE playerinv SET itemS3 = NULL WHERE iid = ? AND itemS3 = ?', [uid,sellresponse], function (err) {
+            dbp.run('UPDATE playerinv SET itemS3 = 0 WHERE iid = ?', [uid], function (err) {
                 if (err) { logger.error(err.message); } 
             });
             dbp.run('UPDATE playerinv SET money = money + 3 WHERE iid = ?', [uid], function (err) {
@@ -301,8 +314,49 @@ app.post('/store', (req,res) => {
             }
         
         else { logger.warn(`Invalid sell response(numbers or no spaces most likely): ${sellresponse}`);};
-   
-   };
+
+    };
+});
+// feed pet route
+app.post('/feed-pet', midAuth, (req, res) => {
+    // get current pet
+    dbp.get('SELECT * FROM "owned pets" LIMIT 1', (err, pet) => {
+        if (err || !pet) {
+            logger.error('Error finding pet:', err?.message);
+            return res.status(500).send('Error finding pet');
+        }
+        // update pet hunger
+        const newHunger = Math.min(pet.hunger + 10, 100);
+        dbp.run('UPDATE "owned pets" SET hunger = ? WHERE id = ?', [newHunger, pet.id], function (err) {
+            if (err) {
+                logger.error('Error feeding pet:', err.message);
+                return res.status(500).send('Error feeding pet');
+            }
+            logger.info(`Pet ${pet.name} fed. Hunger: ${pet.hunger} -> ${newHunger}`);
+            res.redirect('/profile');
+        });
+    });
+});
+// playing with the pet route
+app.post('/play-pet', midAuth, (req, res) => {
+    // get current pet
+    dbp.get('SELECT * FROM "owned pets" LIMIT 1', (err, pet) => {
+        if (err || !pet) {
+            logger.error('Error finding pet:', err?.message);
+            return res.status(500).send('Error finding pet');
+        }
+        // update pet happiness
+        const newJoy = Math.min(pet.joy + 15, 100);
+        dbp.run('UPDATE "owned pets" SET joy = ? WHERE id = ?', [newJoy, pet.id], function (err) {
+            if (err) {
+                logger.error('Error playing with pet:', err.message);
+                return res.status(500).send('Error playing with pet');
+            }
+            logger.info(`Pet ${pet.name} played with. Joy: ${pet.joy} -> ${newJoy}`);
+            res.json({ success: true, newJoy: newJoy });
+            res.redirect('/profile');
+        });
+    });
 });
 //socket.io setup
 io.on('connection', (socket) => {
