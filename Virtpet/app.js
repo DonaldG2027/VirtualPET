@@ -314,8 +314,49 @@ app.post('/store', (req,res) => {
             }
         
         else { logger.warn(`Invalid sell response(numbers or no spaces most likely): ${sellresponse}`);};
-   
-   };
+
+    };
+});
+// feed pet route
+app.post('/feed-pet', midAuth, (req, res) => {
+    // get current pet
+    dbp.get('SELECT * FROM "owned pets" LIMIT 1', (err, pet) => {
+        if (err || !pet) {
+            logger.error('Error finding pet:', err?.message);
+            return res.status(500).send('Error finding pet');
+        }
+        // update pet hunger
+        const newHunger = Math.min(pet.hunger + 10, 100);
+        dbp.run('UPDATE "owned pets" SET hunger = ? WHERE id = ?', [newHunger, pet.id], function (err) {
+            if (err) {
+                logger.error('Error feeding pet:', err.message);
+                return res.status(500).send('Error feeding pet');
+            }
+            logger.info(`Pet ${pet.name} fed. Hunger: ${pet.hunger} -> ${newHunger}`);
+            res.redirect('/profile');
+        });
+    });
+});
+// playing with the pet route
+app.post('/play-pet', midAuth, (req, res) => {
+    // get current pet
+    dbp.get('SELECT * FROM "owned pets" LIMIT 1', (err, pet) => {
+        if (err || !pet) {
+            logger.error('Error finding pet:', err?.message);
+            return res.status(500).send('Error finding pet');
+        }
+        // update pet happiness
+        const newJoy = Math.min(pet.joy + 15, 100);
+        dbp.run('UPDATE "owned pets" SET joy = ? WHERE id = ?', [newJoy, pet.id], function (err) {
+            if (err) {
+                logger.error('Error playing with pet:', err.message);
+                return res.status(500).send('Error playing with pet');
+            }
+            logger.info(`Pet ${pet.name} played with. Joy: ${pet.joy} -> ${newJoy}`);
+            res.json({ success: true, newJoy: newJoy });
+            res.redirect('/profile');
+        });
+    });
 });
 //socket.io setup
 io.on('connection', (socket) => {
