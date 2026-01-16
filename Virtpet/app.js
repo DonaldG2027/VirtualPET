@@ -230,6 +230,7 @@ app.post('/store', (req,res) => {
             if (err) {
                 logger.error(err.message);
             }
+            logger.info(`Item ${buyresponse}`);
             });
             dbp.run('UPDATE playerinv SET money = money - 2 WHERE iid = ?', [uid], function (err) {
                 if (err) {
@@ -247,6 +248,7 @@ app.post('/store', (req,res) => {
             if (err) {
                 logger.error(err.message);
             }
+            logger.info(`Item ${buyresponse}`);
             });
             dbp.run('UPDATE playerinv SET money = money - 3 WHERE iid = ?', [uid], function (err) {
                 if (err) {
@@ -270,6 +272,7 @@ app.post('/store', (req,res) => {
         if (sellresponse === '1') { 
             dbp.run('UPDATE playerinv SET itemS1 = 0 WHERE iid = ?', [uid], function (err) {
                 if (err) { logger.error(err.message); }
+                logger.info(`Item ${sellresponse} sold`);
             });
             dbp.run('UPDATE playerinv SET money = money + 1 WHERE iid = ?', [uid], function (err) {
                 if (err) {
@@ -285,6 +288,7 @@ app.post('/store', (req,res) => {
         else if (sellresponse === '2') {
             dbp.run('UPDATE playerinv SET itemS2 = 0 WHERE iid = ?', [uid], function (err) {
                 if (err) { logger.error(err.message); }
+                logger.info(`Item ${sellresponse} sold`);
             });
             dbp.run('UPDATE playerinv SET money = money + 2 WHERE iid = ?', [uid], function (err) {
                     if (err) {
@@ -300,6 +304,7 @@ app.post('/store', (req,res) => {
         else if (sellresponse === '3') {
             dbp.run('UPDATE playerinv SET itemS3 = 0 WHERE iid = ?', [uid], function (err) {
                 if (err) { logger.error(err.message); } 
+                logger.info(`Item ${sellresponse} sold`);
             });
             dbp.run('UPDATE playerinv SET money = money + 3 WHERE iid = ?', [uid], function (err) {
                     if (err) {
@@ -314,7 +319,7 @@ app.post('/store', (req,res) => {
             }
         
         else { logger.warn(`Invalid sell response(numbers or no spaces most likely): ${sellresponse}`);};
-
+        
     };
 });
 // feed pet route

@@ -22,18 +22,12 @@ addEventListener('DOMContentLoaded', () => {
     document.getElementById('buyer').addEventListener('click', () => {
        let buyresponse=window.prompt('You chose to buy! Do you want item 1,2, or 3? price is same as number.(only type num no space)')
        alert('You chose to buy item ' + buyresponse);
-       if (sellresponse!=''){
-        sellresponse='';
-       }
        document.getElementById('bresponse').value = buyresponse;
     });
     document.getElementById('seller').addEventListener('click', () => {
         let sellresponse=window.prompt('You chose to sell! What item do you want to sell? type number for item 1,2,3 (only type num no space)')
         alert('You chose to sell item ' + sellresponse);
         document.getElementById('sresponse').value = sellresponse;
-        if (buyresponse!=''){
-            buyresponse='';
-        }
     });
     document.getElementById('runner').addEventListener('click', () => {
         alert('You ran away very quick...')
@@ -46,6 +40,8 @@ addEventListener('DOMContentLoaded', () => {
         window.location.href = '/';
     });
     document.getElementById('submitb').addEventListener('click', () => {   
+        window.location.href = '/store';
+        
     });
 });
 </script>
