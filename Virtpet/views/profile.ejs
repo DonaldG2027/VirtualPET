@@ -3,9 +3,16 @@
     <p>Hallo!!! Youse name shalt be <%= user %>! Let us maketh this pet!</p>
     <!-- pet creation form -->
     <% if (pet) { %>
+        <!--display pet stats-->
         <div id="yourpetstats">
-            <h1>Your pet: <%= pet.name %></h1>
-            <p>Your pet has been created successfully! <a href="/pet">Visit your pet</a></p>
+            <h1>Your Pet: <%= pet.name %></h1>
+            <p>Hunger: <%= pet.hunger %>/100</p>
+            <p>Joy: <%= pet.joy %>/100</p>
+            <p>Color: <span style="background-color: <%= pet.color %>; padding: 5px;"><%= pet.color %></span></p>
+
+            <!-- interacting with the pet-->
+            <button onclick="feedPet()">Feed your pet</button>
+            <button onclick="playWithPet()">Play with your pet</button>
         </div>
     <% } else { %>
         <p>You do not have a pet yet. Please create one below.</p>
@@ -18,7 +25,54 @@
     <% } %>
     <br>
     <br>
-    <a href="../">Back to Home</a>
+    <a href="../index">Back to Home</a>
 
 </body>
+<script>   
+    // feed pet function placeholder
+    function feedPet() {
+        fetch('/feed-pet', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // update display
+                alert('Your pet has been fed!');
+                location.reload();
+            } else {
+                alert('Error feeding pet.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error feeding pet.');
+        });
+    }
+    // play with pet function placeholder
+    function playWithPet() {
+        fetch('/play-pet', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('You played with your pet!');
+                location.reload();
+            } else {
+                alert('Error playing with pet.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error playing with pet.');
+        });
+    }
+</script>
 <%- include('partials/footer') %>

@@ -179,16 +179,8 @@ app.get('/sockets', (req, res) => {
     res.render('sockets', sockdata);
 });
 app.get('/pet', midAuth, (req, res) => {
-    dbp.get('SELECT * FROM "owned pets" LIMIT 1', (err, pet) => {
-        if (err) {
-            logger.error('Pet query error:', err.message);
-        }
-        const petData = userLayout.getUserData(req.session);
-        petData.pet = pet;
-
-        console.log('Pet page = Pet data:', pet);
-        res.render('pet', petData);
-    });
+    petdata = userLayout.getUserData(req.session);
+    res.render('pet', petdata);
 });
 app.get('/chatroom', midAuth, (req, res) => {
     chatdata = userLayout.getUserData(req.session);

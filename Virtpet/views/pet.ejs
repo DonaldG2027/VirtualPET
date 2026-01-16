@@ -1,27 +1,18 @@
 <%- include('partials/header') %>
 <body>
-    <h1>Your Virtual Pet</h1>
+    <p>Hey there, <%= user %>! What do you want to do with your pet today?</p>
     <br>
-    <% if (pet) { %>
-        <div id="petdisplay">
-            <h2><%= pet.name %></h2>
-            <p>Hunger: <%= pet.hunger %>/100</p>
-            <p>Joy: <%= pet.joy %>/100</p>
-            <p>Color: <span style="background-color: <%= pet.color %>; padding: 5px;"><%= pet.color %></span></p>
-            <!-- pet interaction forms -->
-            <form action="/pet/feed" method="POST" style="display: inline;">
-                <button type="submit">Feed your pet</button>
-            </form>
-            <form action="/pet/play" method="POST" style="display: inline;">
-                <button type="submit">Play with your pet</button>
-            </form>
-        </div>
-    <% } else { %>
-        <p>You don't even have a pet yet, you idiot! Go create one in your profile.</p>
-        <a href="/profile">Create it here</a>
-    <% } %>
+    <form id="petActions" action="/pet" method="POST">
+        <button type="submit" name="action" value="feed">Feed Pet</button>
+        <button type="submit" name="action" value="play">Play with Pet</button>
+        <button type="submit" name="action" value="clean">Clean Pet</button>
+        <button type="submit" name="action" value="sleep">Put Pet to Sleep</button>
+        <button type="submit" name="action" value="rename">Rename Pet</button>
+        <button type="button"></button>
+        <button type="submit" name="action" value="abandon">Abandon Pet</button>
+    </form>
     <br>
-    <a href="../">Back to Home</a>
+
 </body>
 <script> 
     
