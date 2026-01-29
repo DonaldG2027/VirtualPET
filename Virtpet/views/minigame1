@@ -1,0 +1,9 @@
+<%- include('partials/header') %>
+<body>
+    <h1>Welcome to Click Em', <%= user %>!</h1>
+    <p>Click the button as many times as you can in 10 seconds to earn points!</p>
+    <button id="clickButton" style="font-size:24px;">Click Me!</button>
+    <p>Time Left: <span id="timeLeft">10</span> seconds</p>
+    <p>Your Score: <span id="score">0</span></p>
+</body>
+<%- include('partials/footer') %>
