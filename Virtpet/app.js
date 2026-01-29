@@ -381,7 +381,11 @@ app.post('/pet/play', midAuth, (req, res) => {
         });
     });
 });
-
+//minigame1 route
+app.get('/minigame1', midAuth, (req, res) => {
+    gamedata = userLayout.getUserData(req.session);
+    res.render('minigame1', gamedata);
+});
 //socket.io setup
 io.on('connection', (socket) => {
     logger.info('a user connected');
