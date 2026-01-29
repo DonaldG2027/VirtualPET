@@ -1,16 +1,79 @@
-<%- include('partials/header') %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pets Man</title>
+    <style>
+        #mapel {
+            position:relative;
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Map_of_USA_with_state_names.svg/960px-Map_of_USA_with_state_names.svg.png?20250216175413');
+            height: 600px;
+            background-repeat: no-repeat;
+        }
+        #createPet{
+            position: absolute;
+            font-size: 20px;
+            bottom: 100px; 
+            right: 120px;
+            color: #ff0000;
+            text-decoration: none;
+        }
+        #vPet{
+            position: absolute;
+            font-size: 20px;
+            bottom: 420px; 
+            right: 80px;
+            color: #1c6480;
+            text-decoration: none;
+        }
+        #sockit{
+            position: absolute;
+            font-size: 20px;
+            bottom: 150px; 
+            right: 415px;
+            color: #0000ff;
+            text-decoration: none;
+        }
+        #storer{
+            position: absolute;
+            font-size: 20px;
+            bottom: 300px; 
+            right: 810px;
+            color: #ffa500;
+            text-decoration: none;
+        }
+        #chatr{
+            position: absolute;
+            font-size: 20px;
+            bottom: 500px; 
+            right: 620px;
+            color: #800080;
+            text-decoration: none;
+        }
+    </style>
+</head>
 <body>
     <p>Hey there, <%= user %>! What do we want to do today?</p>
     <br>
-    <a href="../profile">Create Pet</a>
+    <div id="mapel">
     <br>
-    <a href="../pet">View Pet</a>
     <br>
-    <a href="../sockets">Socket Testing (for your own use, rather than chatting with others)</a>
     <br>
-    <a href="../store">Store</a>
     <br>
-    <a href="../chatroom">Chatroom</a>
+    <br>
+    <a id="createPet" href="../profile">Create Pet</a>
+    <br>
+    <a id="vPet" href="../pet">View Pet</a>
+    <br>
+    <a id="sockit" href="../sockets">Socket Testing</a>
+    <br>
+    <a id="storer" href="../store">Store</a>
+    <br>
+    <a id="chatr" href="../chatroom">Chatroom</a>
+    </div>
 </body>
 <script> 
     console.log("Page only available if logged in");
