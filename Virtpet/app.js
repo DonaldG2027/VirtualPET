@@ -398,6 +398,15 @@ app.post('/minigame1', midAuth, (req, res) => {
                 logger.info(`User ${uid} new money added amount: ${nscore}`);
             });
 });
+//mingame2 route
+app.get('/mingame2', midAuth, (req, res) => {
+    gamedata = userLayout.getUserData(req.session);
+    res.render('minigame2', gamedata);
+}
+);
+app.post('/mingame2', midAuth, (req, res) => {
+    console.log("mingame2post");
+});
 //socket.io setup
 io.on('connection', (socket) => {
     logger.info('a user connected');
