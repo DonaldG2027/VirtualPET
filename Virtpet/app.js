@@ -124,72 +124,105 @@ app.get('/logout', (req, res) => {
     res.redirect('/login');
 });
 app.get('/profile', midAuth, (req, res) => {
-    dbu.all('SELECT * FROM Uploads', (err, uploads) => {
-        if (err) {
-            logger.error(err.message);
-            res.status(500).send('Error retrieving uploads');
+    const username = req.session.user;
+    
+    // Get user's ID first
+    dbp.get('SELECT id FROM users WHERE username = ?', [username], (err, user) => {
+        if (err || !user) {
+            logger.error('Error finding user:', err?.message);
+            // Still render page but with no pet
+            dbu.all('SELECT * FROM Uploads', (err, uploads) => {
+                if (err) uploads = [];
+                const profileData = userLayout.getProfileData(req.session, uploads);
+                profileData.pet = null; // No pet if user not found
+                res.render('profile', profileData);
+            });
             return;
         }
         
-        // Getting the user's pet 
-        dbp.get('SELECT * FROM "owned pets" LIMIT 1', (err, pet) => {
+        // Get user's pet
+        dbp.get('SELECT * FROM "owned pets" WHERE ownerid = ?', [user.id], (err, pet) => {
             if (err) {
-                logger.error(err.message);
-                res.status(500).send('Error retrieving pet');
-                return;
+                logger.error('Pet query error:', err.message);
+                pet = null; // Set to null on error
             }
-        // getting uploads
-        dbu.all('SELECT * FROM Uploads', (err, uploads) => {
-            if (err) {
-                logger.error('Uploads query error:', err.message);
-                uploads = []; //default to empty array on error
-            }
-            // prepare profile data
-            const profileData = userLayout.getProfileData(req.session, uploads);
-            profileData.pet = pet; // adding pet data to profileData
-            // Debug logs
-            console.log('Pet Data:', pet);
-            console.log('User:', req.session.user);
-
-            res.render('profile', profileData);
+            
+            // Get uploads
+            dbu.all('SELECT * FROM Uploads', (err, uploads) => {
+                if (err) {
+                    logger.error('Uploads query error:', err.message);
+                    uploads = [];
+                }
+                
+                // Now pet is properly defined in this scope
+                const profileData = userLayout.getProfileData(req.session, uploads);
+                profileData.pet = pet; // This will work now
+                
+                console.log('Profile - Pet Data:', pet);
+                console.log('Profile - User:', req.session.user);
+                
+                res.render('profile', profileData);
+            });
         });
     });
 });
-});
+
 // handling creating the pets
-app.post('/profile', upload.single('petImage'), (req, res) => {
-    logger.info('File upload request received');
-    logger.info('req.body:', req.body);
-    logger.info('req.file:', req.file);
-    logger.info('Content-Type:', req.get('Content-Type'));
-    let curupload = req.file.path;
-    logger.info('Current upload:', curupload);
-    let uid = req.body.uid;
-    dbu.run('INSERT INTO Uploads (uid, upload) VALUES (?, ?)', [uid, curupload], function (err) {
-        if (err) {
-            logger.error(err.message);
-            res.status(500).send('Error uploading file');
-        } else {
-            logger.info(`File uploaded by user ${uid} at ${new Date().toISOString()}`);
-            res.redirect('/profile');
+app.post('/profile', (req, res) => {
+    const petName = req.body.petName;
+    const petColor = req.body.petColor;
+    const username = req.session.user;
+
+    // getting user id first
+    dbp.get('SELECT id FROM  users WHERE username = ?', [username], (err, user) => {
+        if (err || !user) {
+            logger.error('Error finding user for pet creation:', err?.message);
+            return res.status(500).send('Error creating pet');
         }
-    });});
+
+        const userId = user.id;
+        const initialHunger = 50;
+        const initialJoy = 50;
+        
+        // create pet w proper owner id
+        dbp.run('INSERT INTO "owned pets" (name, hunger, joy, color, ownerid) VALUES (?, ?, ?, ?, ?)',
+            [petName, initialHunger, initialJoy, petColor, userId], function(err) {
+            if (err) {
+                logger.error('Error creating pet:', err.message);
+                res.status(500).send('Error creating pet');
+            } else {
+                logger.info(`Pet ${petName} created for user ${username} (ID: ${userId})`);
+                res.redirect('/profile');
+            }
+        });
+    });
+});
 app.get('/sockets', (req, res) => {
     sockdata = userLayout.getUserData(req.session);
     res.render('sockets', sockdata);
 });
 app.get('/pet', midAuth, (req, res) => {
-    // Get pet data for the pet page
-    dbp.get('SELECT * FROM "owned pets" LIMIT 1', (err, pet) => {
-        if (err) {
-            logger.error('Pet query error:', err.message);
+    // Get the user's ID from users table, then get their pet
+    dbp.get('SELECT id FROM users WHERE username = ?', [req.session.user], (err, user) => {
+        if (err || !user) {
+            logger.error('Error finding user:', err?.message);
+            const petData = userLayout.getUserData(req.session);
+            petData.pet = null; // No pet data
+            return res.render('pet', petData);
         }
-        
-        const petData = userLayout.getUserData(req.session);
-        petData.pet = pet; // This line is crucial!
-        
-        console.log('Pet page - Pet Data:', pet); // Debug log
-        res.render('pet', petData); // Pass petData, not just petdata
+
+        // getting the pet that belongs to the user
+        dbp.get('SELECT * FROM "owned pets" WHERE ownerid = ?', [user.id], (err, pet) => {
+            if (err) {
+                logger.error('Pet query error:', err.message);
+            }
+
+            const petData = userLayout.getUserData(req.session);
+            petData.pet = pet; // null if no pet found
+
+            console.log('User ID:', user.id, 'Pet found:', pet); // debugging log
+            res.render('pet', petData);
+        });
     });
 });
 app.get('/chatroom', midAuth, (req, res) => {
@@ -207,15 +240,15 @@ app.get('/store', (req,res) => {
     res.render('store')
 });
 app.post('/store', (req,res) => {
-   let buyresponse=req.body.buyresponse;
-   let sellresponse=req.body.sellresponse;
-   logger.info(`User ${req.session.user} buy response: ${buyresponse}, sell response: ${sellresponse}`);
-   if (buyresponse) {
+let buyresponse=req.body.buyresponse;
+let sellresponse=req.body.sellresponse;
+logger.info(`User ${req.session.user} buy response: ${buyresponse}, sell response: ${sellresponse}`);
+if (buyresponse) {
        //process buy
-       logger.info(`Processing buy of item ${buyresponse} for user ${req.session.user}`);
-       let uid = req.session.user;
-       console.log(`buyresponse: ${buyresponse}`);
-       if (buyresponse === '1')  {
+    logger.info(`Processing buy of item ${buyresponse} for user ${req.session.user}`);
+    let uid = req.session.user;
+    console.log(`buyresponse: ${buyresponse}`);
+    if (buyresponse === '1')  {
         logger.info(`Buying item 1 ${buyresponse}`);
             dbp.run('Update playerinv SET itemS1 = 1 WHERE iid = ?', [uid], function (err) {
             if (err) {
@@ -235,8 +268,8 @@ app.post('/store', (req,res) => {
             }); 
             
         }
-       else if (buyresponse === '2') { 
-         dbp.run('UPDATE playerinv SET itemS2 = 1 WHERE iid = ?', [uid], function (err) {
+    else if (buyresponse === '2') { 
+        dbp.run('UPDATE playerinv SET itemS2 = 1 WHERE iid = ?', [uid], function (err) {
             if (err) {
                 logger.error(err.message);
             }
@@ -253,8 +286,8 @@ app.post('/store', (req,res) => {
                 }
             });
         }
-       else if (buyresponse === '3') {
-         dbp.run('UPDATE playerinv SET itemS3 = 1 WHERE iid = ?', [uid], function (err) {
+    else if (buyresponse === '3') {
+        dbp.run('UPDATE playerinv SET itemS3 = 1 WHERE iid = ?', [uid], function (err) {
             if (err) {
                 logger.error(err.message);
             }
@@ -271,11 +304,11 @@ app.post('/store', (req,res) => {
                 }
             }); 
         }
-       else { logger.warn(`Invalid buy response(numbers or no spaces most likely): ${buyresponse}`); };
-      
+    else { logger.warn(`Invalid buy response(numbers or no spaces most likely): ${buyresponse}`); };
+    
     };
-   
-   if (sellresponse) {
+
+if (sellresponse) {
         //process sell
         logger.info(`Processing sell of item ${sellresponse} for user ${req.session.user}`);
         let uid = req.session.user;
