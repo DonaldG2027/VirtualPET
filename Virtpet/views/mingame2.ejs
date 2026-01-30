@@ -1,9 +1,35 @@
-<%- include('partials/header') %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doc's Funhouse!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            position:relative;
+        }
+        #Doc {
+            margin-top: 20px;
+            width: 300px;
+            height: auto;
+            position: absolute;
+            top: 450px;
+            right: 320px;
+        }
+
+    </style>
+</head>
 <body>
-    <h1>Mini Game 2</h1>
-    <p>Welcome to Mini Game 2! This is where the fun continues.</p>
-    <form action="/minigame2" method="POST">
-        <button type="submit">Play Mini Game 2</button>
-    </form>
+   
+    <p><strong>Welcome to Doc's Funhouse! This is where the fun Begins!</strong></p>
+    
+
+    <img id="Doc"src="https://www.shutterstock.com/shutterstock/photos/46116535/display_1500/stock-photo-crazy-doctor-isolated-over-white-46116535.jpg" alt="Crazy Doctor" >
 </body>
+<script>
+    // make question give input back to page also add questions
+</script>
 <%- include('partials/footer') %>
