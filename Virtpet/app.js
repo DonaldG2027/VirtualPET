@@ -401,7 +401,7 @@ app.post('/minigame1', midAuth, (req, res) => {
 //mingame2 route
 app.get('/mingame2', midAuth, (req, res) => {
     gamedata = userLayout.getUserData(req.session);
-    res.render('minigame2', gamedata);
+    res.render('mingame2', gamedata);
 }
 );
 app.post('/mingame2', midAuth, (req, res) => {
