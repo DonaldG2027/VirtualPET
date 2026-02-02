@@ -103,9 +103,9 @@
     function runFivePercentChance() {
     const randomNumber = Math.random();
     if (randomNumber <= 0.1) {
-        console.log("Success! The 5% chance event occurred.");
+        console.log("Success! The 10% chance event occurred.");
         itemer += 1;
-        getelementbyId('itemer').value = itemer;
+        document.getElementById('itemer').value = itemer;
         document.getElementById('itemForm').submit();
         alert("Lucky you! You found a rare item!");
 
