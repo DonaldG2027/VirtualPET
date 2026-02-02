@@ -4,67 +4,41 @@
     <p>Hey there, <%= user %>! What do you want to do with your pet today?</p>
     <br>
     <% if (pet) { %>
-        <div id="petdisplay">
-            <h1>Your Pet: <%= pet.name %></h1>
+        <div id="petDisplay">
+            <h2><%= pet.name %></h2>
             <p>Hunger: <%= pet.hunger %>/100</p>
             <p>Joy: <%= pet.joy %>/100</p>
-            <p>Color: <span style="background-color: <%= pet.color %>; padding: 5px;"><%= pet.color %></span></p>
-            <!-- interacting with the pet-->
-            <button onclick="feedPet()">Feed your pet</button>
-            <button onclick="playWithPet()">Play with your pet</button>
+            <p>Color: <span style="background-color: <%= pet.color %>; padding: 5px; color: white; border-radius: 3px;"><%= pet.color %></span></p>
+            
+            <!-- Pet interaction forms -->
+            <div style="margin: 15px 0;">
+                <form action="/pet/feed" method="POST" style="display: inline; margin-right: 10px;">
+                    <button type="submit">Feed Pet</button>
+                </form>
+                
+                <form action="/pet/play" method="POST" style="display: inline;">
+                    <button type="submit">Play with Pet</button>
+                </form>
+            </div>
+            
+            <!-- NEW: Color change form -->
+            <div style="margin: 15px 0; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                <h3>Customize Your Pet</h3>
+                <form action="/pet/color" method="POST" style="display: inline;">
+                    <label for="newColor">Change Color: </label>
+                    <input type="color" id="newColor" name="newColor" value="<%= pet.color %>">
+                    <button type="submit">Update Color</button>
+                </form>
+            </div>
+            
         </div>
     <% } else { %>
-        <p>You don't even have a pet yet, you idiot! Go create one in your profile.</p>
+        <p>You don't even have a pet yet, you idiot! Go create one in your <a href="/profile">profile.</p>
         <a href="/profile">Create it here</a>
     <% } %>
     <br><br>
     <a href="/">Back to Home</a>
 </body>
-<script>   
-    // feed pet function placeholder
-    function feedPet() {
-        fetch('/pet/feed', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // update display
-                alert('Your pet has been fed!');
-                location.reload();
-            } else {
-                alert('Error feeding pet.');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error feeding pet.');
-        });
-    }
-    // play with pet function placeholder
-    function playWithPet() {
-        fetch('/pet/play', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('You played with your pet!');
-                location.reload();
-            } else {
-                alert('Error playing with pet.');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error playing with pet.');
-        });
-    }
+<script> 
 </script>
 <%- include('partials/footer') %>

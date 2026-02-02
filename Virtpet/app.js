@@ -414,6 +414,37 @@ app.post('/pet/play', midAuth, (req, res) => {
         });
     });
 });
+// color change route
+app.post('/pet/color', midAuth, (req, res) => {
+    const username = req.session.user;
+    const newColor = req.body.newColor;
+    
+    console.log(`Color change request: ${username} wants to change to ${newColor}`);
+    
+    // Get user's pet
+    dbp.get('SELECT u.id, p.* FROM users u JOIN "owned pets" p ON u.id = p.ownerid WHERE u.username = ?', 
+        [username], (err, pet) => {
+        if (err || !pet) {
+            logger.error('Error finding user\'s pet for color change:', err?.message);
+            return res.status(500).send('Pet not found');
+        }
+        
+        console.log(`Changing pet ${pet.name} color from ${pet.color} to ${newColor}`);
+        
+        // Update pet color
+        dbp.run('UPDATE "owned pets" SET color = ? WHERE pid = ?', 
+            [newColor, pet.pid], function(err) {
+            if (err) {
+                logger.error('Error updating pet color:', err.message);
+                return res.status(500).send('Failed to update color');
+            }
+            
+            logger.info(`Pet ${pet.name} color changed from ${pet.color} to ${newColor}`);
+            res.redirect('/pet');
+        });
+    });
+});
+
 //minigame1 route
 app.get('/minigame1', midAuth, (req, res) => {
     gamedata = userLayout.getUserData(req.session);
