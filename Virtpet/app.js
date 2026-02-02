@@ -406,6 +406,16 @@ app.get('/mingame2', midAuth, (req, res) => {
 );
 app.post('/mingame2', midAuth, (req, res) => {
     console.log("mingame2post");
+    Finalpun=req.body.answer
+    FFinalpun=Finalpun.toLowerCase().trim();
+    logger.info(`User ${req.session.user} final pun response: ${FFinalpun}`);
+    let uid = req.session.user;
+    if (FFinalpun === 'hippocampus') {
+        dbp.run('UPDATE playerinv SET money = money + 5 WHERE iid = ?', [uid], function (err) {
+                if (err) { logger.error(err.message); }
+                logger.info(`User ${uid} answered correctly and earned 5 money!`);
+            });
+    }
 });
 //socket.io setup
 io.on('connection', (socket) => {
