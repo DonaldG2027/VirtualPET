@@ -169,69 +169,34 @@ app.get('/profile', midAuth, (req, res) => {
 
 // handling creating the pets
 app.post('/profile', (req, res) => {
-    console.log('=== PET CREATION DEBUG ===');
-    console.log('req.body:', req.body);
-    console.log('req.session.user:', req.session.user);
-    
     const petName = req.body.petName;
     const petColor = req.body.petColor;
     const username = req.session.user;
-    
-    console.log('Extracted data:', { petName, petColor, username });
-    
-    if (!petName || !petColor || !username) {
-        console.log('Missing required data!');
-        return res.status(400).send('Missing pet name, color, or user session');
-    }
-    
-    // Check if user exists, create if they don't
-    console.log('Looking for user:', username);
-    dbp.get('SELECT id FROM users WHERE username = ?', [username], (err, user) => {
-        console.log('User query result:', { err, user });
-        
-        if (err) {
-            console.error('Database error finding user:', err);
-            return res.status(500).send('Database error finding user: ' + err.message);
+
+    // getting user id first
+    dbp.get('SELECT id FROM  users WHERE username = ?', [username], (err, user) => {
+        if (err || !user) {
+            logger.error('Error finding user for pet creation:', err?.message);
+            return res.status(500).send('Error creating pet');
         }
+
+        const userId = user.id;
+        const initialHunger = 50;
+        const initialJoy = 50;
         
-        if (!user) {
-            // User doesn't exist, create them
-            console.log('Creating new user:', username);
-            dbp.run('INSERT INTO users (username, formbarId, lastUpdate) VALUES (?, ?, ?)', 
-                [username, Date.now(), Date.now()], function(err) {
-                if (err) {
-                    console.error('Error creating user:', err);
-                    return res.status(500).send('Error creating user: ' + err.message);
-                }
-                
-                console.log('New user created with ID:', this.lastID);
-                const newUserId = this.lastID;
-                createPet(newUserId);
-            });
-        } else {
-            // User exists, use their ID
-            console.log('User found with ID:', user.id);
-            createPet(user.id);
-        }
-        
-        // Function to create pet
-        function createPet(userId) {
-            console.log('Creating pet with userId:', userId);
-            dbp.run('INSERT INTO "owned pets" (name, hunger, joy, color, ownerid) VALUES (?, ?, ?, ?, ?)', 
-                [petName, 50, 50, petColor, userId], function(err) {
-                if (err) {
-                    console.error('Error creating pet:', err);
-                    res.status(500).send('Error creating pet: ' + err.message);
-                } else {
-                    console.log(`Pet ${petName} created successfully for user ${username} (ID: ${userId})`);
-                    res.redirect('/profile');
-                }
-            });
-        }
+        // create pet w proper owner id
+        dbp.run('INSERT INTO "owned pets" (name, hunger, joy, color, ownerid) VALUES (?, ?, ?, ?, ?)',
+            [petName, initialHunger, initialJoy, petColor, userId], function(err) {
+            if (err) {
+                logger.error('Error creating pet:', err.message);
+                res.status(500).send('Error creating pet');
+            } else {
+                logger.info(`Pet ${petName} created for user ${username} (ID: ${userId})`);
+                res.redirect('/profile');
+            }
+        });
     });
 });
-
-
 app.get('/sockets', (req, res) => {
     sockdata = userLayout.getUserData(req.session);
     res.render('sockets', sockdata);
