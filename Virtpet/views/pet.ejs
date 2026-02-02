@@ -4,17 +4,22 @@
     <p>Hey there, <%= user %>! What do you want to do with your pet today?</p>
     <br>
     <% if (pet) { %>
-        <div id="petdisplay">
+        <div id="yourpetstats">
             <h1>Your Pet: <%= pet.name %></h1>
             <p>Hunger: <%= pet.hunger %>/100</p>
             <p>Joy: <%= pet.joy %>/100</p>
             <p>Color: <span style="background-color: <%= pet.color %>; padding: 5px;"><%= pet.color %></span></p>
-            <!-- interacting with the pet-->
-            <button onclick="feedPet()">Feed your pet</button>
-            <button onclick="playWithPet()">Play with your pet</button>
+
+            <!-- Use forms instead of onclick functions -->
+            <form action="/pet/feed" method="POST" style="display: inline;">
+                <button type="submit">Feed your pet</button>
+            </form>
+            <form action="/pet/play" method="POST" style="display: inline;">
+                <button type="submit">Play with your pet</button>
+            </form>
         </div>
     <% } else { %>
-        <p>You don't even have a pet yet, you idiot! Go create one in your profile.</p>
+        <p>You don't even have a pet yet, you idiot! Go create one in <a href="/profile">your profile</a>.</p>
         <a href="/profile">Create it here</a>
     <% } %>
     <br><br>

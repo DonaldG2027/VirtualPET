@@ -4,18 +4,9 @@
     <!-- pet creation form -->
     <% if (pet) { %>
         <!--display pet stats-->
-        <div id="yourpetstats">
-            <h1>Your Pet: <%= pet.name %></h1>
-            <p>Hunger: <%= pet.hunger %>/100</p>
-            <p>Joy: <%= pet.joy %>/100</p>
-            <p>Color: <span style="background-color: <%= pet.color %>; padding: 5px;"><%= pet.color %></span></p>
-
-            <!-- interacting with the pet-->
-            <button onclick="feedPet()">Feed your pet</button>
-            <button onclick="playWithPet()">Play with your pet</button>
+        <p>You already made a pet called <%= pet.name %>, silly! Go to <a href="/pet">your pet</a> instead, you goofball.</p>
         </div>
     <% } else { %>
-        <p>You do not have a pet yet. Please create one below.</p>
     <form id="createPet" action="/profile" method="POST">
         Pet Name: <input type="text" name="petName" required></input><br>
         <!-- using html and css for colors-->
