@@ -21,8 +21,8 @@
         }
         #linkback {
             position: absolute;
-            top: 700px;
-            left: 750px;
+            top: 400px;
+            left: 420px;
             color: blue;
 
         }
@@ -49,11 +49,11 @@
         const resultElement = document.getElementById('result');
 
         if (userAnswer === correctAnswer) {
-            resultElement.textContent = 'Correct! You win a prize!';
+            resultElement.textContent = 'Genius! You win a prize!';
             resultElement.style.color = 'green';
             document.getElementById('punsub').disabled= true;
         } else {
-            resultElement.textContent = 'Incorrect. Try again!';
+            resultElement.textContent = 'Incorrect. You Numbskull!';
             resultElement.style.color = 'red';
         }
     });
