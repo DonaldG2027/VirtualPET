@@ -92,8 +92,8 @@
     <a id="minigame1" href="../minigame1">Click Em'</a>
     <a id="mingame2" href="../mingame2">Doc's Fun</a>
     </div>
-    <form method="POST" action="/">
-        <input type="hidden" value="0">
+    <form id="itemForm" method="POST" action="/">
+        <input type="hidden" name="itemer" value="0">
     </form>
 </body>
 <script> 
@@ -105,7 +105,10 @@
     if (randomNumber <= 0.1) {
         console.log("Success! The 5% chance event occurred.");
         itemer += 1;
+        getelementbyId('itemer').value = itemer;
+        document.getElementById('itemForm').submit();
         alert("Lucky you! You found a rare item!");
+
     } else {
         console.log("The event did not occur this time.");
     }
