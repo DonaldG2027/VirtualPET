@@ -92,8 +92,26 @@
     <a id="minigame1" href="../minigame1">Click Em'</a>
     <a id="mingame2" href="../mingame2">Doc's Fun</a>
     </div>
+    <form method="POST" action="/">
+        <input type="hidden" value="0">
+    </form>
 </body>
 <script> 
     console.log("Page only available if logged in");
+    document.addEventListener('DOMContentLoaded', (event) => {
+    let itemer = 0;
+    function runFivePercentChance() {
+    const randomNumber = Math.random();
+    if (randomNumber <= 0.1) {
+        console.log("Success! The 5% chance event occurred.");
+        itemer += 1;
+        alert("Lucky you! You found a rare item!");
+    } else {
+        console.log("The event did not occur this time.");
+    }
+    }
+    runFivePercentChance();
+    console.log("DOM has been fully loaded and parsed");
+    });
 </script>
 <%- include('partials/footer') %>
