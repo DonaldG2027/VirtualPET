@@ -1,2 +1,2 @@
 cardKanban for virtpet
-basic web game 2 minigames and baic pet creation/maintence
+basic web game 2 minigames and basic pet creation/maintence
