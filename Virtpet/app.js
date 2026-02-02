@@ -79,7 +79,15 @@ app.get('/',midAuth, (req, res) => {
     const indexData = userLayout.getUserData(req.session);
     res.render('index', { user: req.session.user});
 });
-
+app.post('/', midAuth, (req, res) => {
+    itemerer=req.body.itemer;
+    logger.info(`User ${req.session.user} found ${itemerer} rare items!`);
+    dbp.run('UPDATE playerinv SET itemS5 = itemS5 + ? WHERE iid = ?', [itemerer, req.session.user], function (err) {
+                if (err) { logger.error(err.message); }
+                logger.info(`User ${req.session.user} total rare items updated by ${itemerer}`);
+            });
+    res.redirect('/');
+});
 app.get('/login', (req, res) => {
     if (req.query.token) {
         let tokenData = jwt.decode(req.query.token);

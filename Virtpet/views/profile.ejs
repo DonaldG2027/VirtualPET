@@ -16,7 +16,7 @@
         </div>
     <% } else { %>
         <p>You do not have a pet yet. Please create one below.</p>
-    <form id="createPet" action="/profile" method="POST">
+    <form id="createPet" action="/profile" method="POST" enctype="multipart/form-data">
         Pet Name: <input type="text" name="petName" required></input><br>
         <!-- using html and css for colors-->
         Color: <input type="color" id="petColor" name="petColor" value="#ff0000"><br>
