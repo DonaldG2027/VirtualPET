@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doc's Funhouse!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            position:relative;
+        }
+        #Doc {
+            margin-top: 20px;
+            width: 300px;
+            height: auto;
+            position: absolute;
+            top: 450px;
+            right: 320px;
+        }
+        #linkback {
+            position: absolute;
+            top: 700px;
+            left: 750px;
+            color: blue;
+
+        }
+    </style>
+</head>
+<body>
+   
+    <p><strong>Welcome to Doc's Funhouse! This is where the fun Begins!</strong></p>
+    <p>Answer the question correctly to win a prize of 5 money!</p>
+    <h3> What do you call a educated Hippo?</h3>
+    <form id="punForm" method="POST" action="/mingame2">
+        <input type="text" id="answer" name="answer" placeholder="Response Here" required>
+        <button type="submit" id="punsub">Submit</button>
+    </form>
+    <p id="result"></p>
+
+    <img id="Doc"src="https://www.shutterstock.com/shutterstock/photos/46116535/display_1500/stock-photo-crazy-doctor-isolated-over-white-46116535.jpg" alt="Crazy Doctor" >
+    <a href="/" id="linkback"><button>Back to Map</button></a>
+</body>
+<script>
+    document.getElementById('punForm').addEventListener('submit', function(e) {
+        const userAnswer = document.getElementById('answer').value.trim().toLowerCase();
+        const correctAnswer = 'hippocampus';
+        const resultElement = document.getElementById('result');
+
+        if (userAnswer === correctAnswer) {
+            resultElement.textContent = 'Correct! You win a prize!';
+            resultElement.style.color = 'green';
+            document.getElementById('punsub').disabled= true;
+        } else {
+            resultElement.textContent = 'Incorrect. Try again!';
+            resultElement.style.color = 'red';
+        }
+    });
+</script>
+<%- include('partials/footer') %>

@@ -414,7 +414,42 @@ app.post('/pet/play', midAuth, (req, res) => {
         });
     });
 });
-
+//minigame1 route
+app.get('/minigame1', midAuth, (req, res) => {
+    gamedata = userLayout.getUserData(req.session);
+    res.render('minigame1', gamedata);
+});
+app.post('/minigame1', midAuth, (req, res) => {
+    console.log("Full request body:", req.body);
+    console.log("Looking for finalScore:", req.body.finalScore);
+    console.log("Looking for fscore:", req.body.fscore);
+    let nscore=req.body.finalScore / 2;
+    logger.info(`User ${req.session.user} final score: ${nscore}`);
+    let uid = req.session.user;
+    dbp.run('UPDATE playerinv SET money = money + ? WHERE iid = ?', [nscore, uid], function (err) {
+                if (err) { logger.error(err.message); } 
+                logger.info(`User ${uid} new money added amount: ${nscore}`);
+            });
+});
+//mingame2 route
+app.get('/mingame2', midAuth, (req, res) => {
+    gamedata = userLayout.getUserData(req.session);
+    res.render('mingame2', gamedata);
+}
+);
+app.post('/mingame2', midAuth, (req, res) => {
+    console.log("mingame2post");
+    Finalpun=req.body.answer
+    FFinalpun=Finalpun.toLowerCase().trim();
+    logger.info(`User ${req.session.user} final pun response: ${FFinalpun}`);
+    let uid = req.session.user;
+    if (FFinalpun === 'hippocampus') {
+        dbp.run('UPDATE playerinv SET money = money + 5 WHERE iid = ?', [uid], function (err) {
+                if (err) { logger.error(err.message); }
+                logger.info(`User ${uid} answered correctly and earned 5 money!`);
+            });
+    }
+});
 //socket.io setup
 io.on('connection', (socket) => {
     logger.info('a user connected');
