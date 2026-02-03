@@ -92,8 +92,52 @@
     <a id="minigame1" href="../minigame1">Click Em'</a>
     <a id="mingame2" href="../mingame2">Doc's Fun</a>
     </div>
+    <form id="itemForm" method="POST" action="/">
+        <input type="hidden" id="itemer" name="itemer" value="0">
+    </form>
 </body>
 <script> 
     console.log("Page only available if logged in");
+    document.addEventListener('DOMContentLoaded', (event) => {
+    let itemer = 0;
+function runFivePercentChance() {
+    const randomNumber = Math.random();
+    console.log("Random number generated:", randomNumber);
+    if (randomNumber <= 0.1) {
+        console.log("Success! The 10% chance event occurred.");
+        itemer += 1;
+        document.getElementById('itemer').value = itemer;
+        document.getElementById('itemForm').submit();
+        alert("Lucky you! You found a rare item!");
+                    const itemForm = document.getElementById('itemForm');
+            const itemField = document.getElementById('itemer'); // This will be null with your current HTML
+            
+            console.log("Form found:", itemForm !== null);
+            console.log("Field found:", itemField !== null);
+            
+            if (!itemForm) {
+                console.error("itemForm not found!");
+                return;
+            }
+            
+            if (!itemField) {
+                console.error("itemer field not found! Check if it has id='itemer'");
+                return;
+            }
+            
+            itemField.value = itemer;
+            console.log("Item value set to:", itemer);
+            
+            alert("Lucky you! You found a rare item!",randomNumber);
+            itemForm.submit();
+
+
+    } else {
+        console.log("The event did not occur this time.");
+    }
+    }
+    runFivePercentChance();
+    console.log("DOM has been fully loaded and parsed");
+    });
 </script>
 <%- include('partials/footer') %>
