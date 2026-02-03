@@ -17,7 +17,7 @@
             position: absolute;
             font-size: 20px;
             bottom: 100px; 
-            right: 120px;
+            right: 1090px;
             color: #ff0000;
             text-decoration: none;
         }
@@ -25,7 +25,7 @@
             position: absolute;
             font-size: 20px;
             bottom: 420px; 
-            right: 80px;
+            right: 1050px;
             color: #1c6480;
             text-decoration: none;
         }
@@ -33,7 +33,7 @@
             position: absolute;
             font-size: 20px;
             bottom: 150px; 
-            right: 415px;
+            right: 1390px;
             color: #0000ff;
             text-decoration: none;
         }
@@ -41,7 +41,7 @@
             position: absolute;
             font-size: 20px;
             bottom: 300px; 
-            right: 810px;
+            right: 1780px;
             color: #ffa500;
             text-decoration: none;
         }
@@ -49,7 +49,7 @@
             position: absolute;
             font-size: 20px;
             bottom: 500px; 
-            right: 620px;
+            right: 1550px;
             color: #800080;
             text-decoration: none;
         }
@@ -57,7 +57,7 @@
             position: absolute;
             font-size: 20px;
             bottom: 305px; 
-            right: 435px;
+            right: 1400px;
             color: #008000;
             text-decoration: none;
         }
@@ -65,7 +65,7 @@
             position: absolute;
             font-size: 20px;
             bottom: 465px; 
-            right: 760px;
+            right: 1730px;
             color: #808080;
             text-decoration: none;
         }
@@ -98,6 +98,7 @@
 </body>
 <script> 
     console.log("Page only available if logged in");
+    console.log("Alternative screens can cause issue with proper display (Fullscreen may be needed)");
     document.addEventListener('DOMContentLoaded', (event) => {
     let itemer = 0;
 function runFivePercentChance() {
@@ -108,31 +109,31 @@ function runFivePercentChance() {
         itemer += 1;
         document.getElementById('itemer').value = itemer;
         document.getElementById('itemForm').submit();
-        alert("Lucky you! You found a rare item!");
-                    const itemForm = document.getElementById('itemForm');
-            const itemField = document.getElementById('itemer'); // This will be null with your current HTML
+        const itemForm = document.getElementById('itemForm');
+        const itemField = document.getElementById('itemer'); // This will be null with your current HTML
             
-            console.log("Form found:", itemForm !== null);
-            console.log("Field found:", itemField !== null);
+        console.log("Form found:", itemForm !== null);
+        console.log("Field found:", itemField !== null);
             
-            if (!itemForm) {
+        if (!itemForm) {
                 console.error("itemForm not found!");
                 return;
-            }
+        }
             
-            if (!itemField) {
+        if (!itemField) {
                 console.error("itemer field not found! Check if it has id='itemer'");
                 return;
-            }
+        }
             
-            itemField.value = itemer;
-            console.log("Item value set to:", itemer);
+        itemField.value = itemer;
+        console.log("Item value set to:", itemer);
             
-            alert("Lucky you! You found a rare item!",randomNumber);
-            itemForm.submit();
+        alert("Lucky you! You found a rare item!",randomNumber);
+        itemForm.submit();
 
 
-    } else {
+    } 
+    else {
         console.log("The event did not occur this time.");
     }
     }
