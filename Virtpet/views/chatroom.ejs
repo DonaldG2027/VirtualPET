@@ -26,7 +26,6 @@
 
     socket.on('update', function(msg) {
         const msgElem = document.createElement('div');
-        // rearrange to show "user said: message"
         msgElem.textContent = "<%- user %>" + " said: " + msg;
         messagesDiv.appendChild(msgElem);
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
