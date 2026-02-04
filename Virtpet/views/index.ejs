@@ -5,149 +5,179 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pets Man</title>
     <style>
-        #mapel {
-            position:relative;
+        body {
+            margin: 0;
+            padding: 0;
             font-family: Arial, sans-serif;
-            margin: 20px;
-            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Map_of_USA_with_state_names.svg/960px-Map_of_USA_with_state_names.svg.png?20250216175413');
-            height: 600px;
-            background-repeat: no-repeat;
         }
-        #createPet{
-            position: absolute;
-            font-size: 20px;
-            bottom: 100px; 
-            right: 1100px;
-            color: #ff0000;
-            text-decoration: none;
-        }
-        #vPet{
-            position: absolute;
-            font-size: 20px;
-            bottom: 420px; 
-            right: 1050px;
-            color: #1c6480;
-            text-decoration: none;
-        }
-        #sockit{
-            position: absolute;
-            font-size: 20px;
-            bottom: 150px; 
-            right: 1390px;
-            color: #0000ff;
-            text-decoration: none;
-        }
-        #storer{
-            position: absolute;
-            font-size: 20px;
-            bottom: 300px; 
-            right: 1780px;
-            color: #ffa500;
-            text-decoration: none;
-        }
-        #chatr{
-            position: absolute;
-            font-size: 20px;
-            bottom: 500px; 
-            right: 1550px;
-            color: #800080;
-            text-decoration: none;
-        }
-        #minigame1{
-            position: absolute;
-            font-size: 20px;
-            bottom: 305px; 
-            right: 1400px;
-            color: #008000;
-            text-decoration: none;
-        }
-        #mingame2{
-            position: absolute;
-            font-size: 20px;
-            bottom: 465px; 
-            right: 1720px;
-            color: #808080;
-            text-decoration: none;
-        }
-        #velcome{
-            position: relative;
-            font-size: 30px;
-            border-top: 5px dashed #800080;
+
+        #velcome {
+            font-size: clamp(20px, 4vw, 30px);
+            border: 5px dashed;
+            border-color: #800080 #008000 #ff0000 #0000ff;
             color: #000000;
-            border-left: 5px dashed #0000ff;
-                border-right: 5px dashed #008000;
-                border-bottom: 5px dashed #ff0000;
-                padding: 20px;
-                width: 600px;
-                margin: 20px auto;
+            padding: 20px;
+            max-width: 600px;
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        #mapel {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            /* Keep aspect ratio of the original image (960px width, ~600px height) */
+            aspect-ratio: 960 / 600; 
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Map_of_USA_with_state_names.svg/960px-Map_of_USA_with_state_names.svg.png?20250216175413');
+            background-size: 100% 100%; /* Fill the container exactly */
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        /* Base styles for all links */
+        .map-link {
+            position: absolute;
+            font-size: clamp(12px, 1.5vw, 18px);
+            text-decoration: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s ease;
+            transform: translate(-50%, -50%); /* Center the link on its position */
+        }
+
+        .map-link:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            background-color: rgba(255, 255, 255, 1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        /* Position links using percentages that match the map locations */
+        /* These percentages should correspond to where you want them on the US map */
+        
+       /* Position links using percentages that match the map locations */
+
+        #createPet {
+        /* Florida area - Southeast corner */
+        bottom: 8%;
+        right: 15%;
+        color: #ff0000;
+        }
+
+        #vPet {
+        /* New York area - Northeast */
+        top: 30%;
+        right: 12%;
+        color: #1c6480;
+        }
+
+    #sockit {
+        /* Texas area - South-central */
+        bottom: 20%;
+        left: 45%;
+        color: #0000ff;
+    }
+
+        #storer {
+            /* California area - West coast */
+            top: 45%;
+            left: 6%;
+            color: #ffa500;
+        }
+
+    #chatr {
+        /* Montana area - Northern central */
+        top: 17%;
+        left: 28%;
+        color: #800080;
+    }
+
+    #minigame1 {
+        /* Kansas area - Central */
+        top: 50%;
+        left: 44%;
+        color: #008000;
+    }
+
+    #mingame2 {
+        /* Oregon area - Northwest */
+        top: 23%;
+        left: 10%;
+        color: #808080;
+    }
+
+        /* Media queries for smaller screens */
+        @media screen and (max-width: 768px) {
+            #mapel {
+                max-width: 95%;
+            }
+            
+            .map-link {
+                font-size: 12px;
+                padding: 3px 6px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            #velcome {
+                margin: 10px;
+                padding: 15px;
+                font-size: 18px;
+            }
+            
+            .map-link {
+                font-size: 10px;
+                padding: 2px 4px;
+            }
         }
     </style>
 </head>
 <body>
     <p id="velcome">Hey there, <%= user %>! What do we want to do today?</p>
-    <br>
+    
     <div id="mapel">
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <a id="createPet" href="../profile">Create Pet</a>
-    <br>
-    <a id="vPet" href="../pet">View Pet</a>
-    <br>
-    <a id="sockit" href="../sockets">Socket Testing</a>
-    <br>
-    <a id="storer" href="../store">Store</a>
-    <br>
-    <a id="chatr" href="../chatroom">Chatroom</a>
-    <a id="minigame1" href="../minigame1">Click Em'</a>
-    <a id="mingame2" href="../mingame2">Doc's Fun</a>
+        <a class="map-link" id="createPet" href="../profile">Create Pet</a>
+        <a class="map-link" id="vPet" href="../pet">View Pet</a>
+        <a class="map-link" id="sockit" href="../sockets">Socket Testing</a>
+        <a class="map-link" id="storer" href="../store">Store</a>
+        <a class="map-link" id="chatr" href="../chatroom">Chatroom</a>
+        <a class="map-link" id="minigame1" href="../minigame1">Click Em'</a>
+        <a class="map-link" id="mingame2" href="../mingame2">Doc's Fun</a>
     </div>
+    
     <form id="itemForm" method="POST" action="/">
         <input type="hidden" id="itemer" name="itemer" value="0">
     </form>
+
+    <script> 
+        // Your existing JavaScript
+        console.log("Page only available if logged in");
+        document.addEventListener('DOMContentLoaded', (event) => {
+            let itemer = 0;
+            function runFivePercentChance() {
+                const randomNumber = Math.random();
+                console.log("Random number generated:", randomNumber);
+                if (randomNumber <= 0.1) {
+                    console.log("Success! The 10% chance event occurred.");
+                    itemer += 1;
+                    
+                    const itemForm = document.getElementById('itemForm');
+                    const itemField = document.getElementById('itemer');
+                    
+                    if (itemForm && itemField) {
+                        itemField.value = itemer;
+                        console.log("Item value set to:", itemer);
+                        alert("Lucky you! You found a rare item!");
+                        itemForm.submit();
+                    }
+                } else {
+                    console.log("The event did not occur this time.");
+                }
+            }
+            runFivePercentChance();
+            console.log("DOM has been fully loaded and parsed");
+        });
+    </script>
 </body>
-<script> 
-    console.log("Page only available if logged in");
-    document.addEventListener('DOMContentLoaded', (event) => {
-    let itemer = 0;
-function runFivePercentChance() {
-    const randomNumber = Math.random();
-    console.log("Random number generated:", randomNumber);
-    if (randomNumber <= 0.1) {
-        console.log("Success! The 10% chance event occurred.");
-        itemer += 1;
-        document.getElementById('itemer').value = itemer;
-        document.getElementById('itemForm').submit();
-        
-        const itemForm = document.getElementById('itemForm');
-        const itemField = document.getElementById('itemer'); // This will be null with your current HTML
-        console.log("Form found:", itemForm !== null);
-        console.log("Field found:", itemField !== null);
-            
-        if (!itemForm) {
-                console.error("itemForm not found!");
-                return;
-        }
-            
-        if (!itemField) {
-                console.error("itemer field not found! Check if it has id='itemer'");
-                return;
-        }
-        itemField.value = itemer;
-        console.log("Item value set to:", itemer);
-        alert("Lucky you! You found a rare item!",randomNumber);
-        itemForm.submit();
-
-
-    } 
-    else {
-        console.log("The event did not occur this time.");
-    }
-    }
-    runFivePercentChance();
-    console.log("DOM has been fully loaded and parsed");
-    });
-</script>
-<%- include('partials/footer') %>
+</html>
