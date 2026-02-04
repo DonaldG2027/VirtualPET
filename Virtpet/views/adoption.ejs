@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adoption</title>
+</head>
+<body>
+    <h1>Hey there, <%= user %>! Wanna adopt a pet?</h1>
+
+    <% if (pets && pets.length > 0) { %>
+        <p>Here are some pets available for adoption:</p>
+        <ul>
+            <% pets.forEach(function(pet) { %>
+                <div style="border: 1px solid #ccc; margin: 10px; padding: 10px;">
+                    <!--pet name, stats, color, adopt button-->
+                    <h2><%= pet.name %></h2>
+                    <p>Hunger: <%= pet.hunger %>/100</p>
+                    <p>Joy: <%= pet.joy %>/100</p>
+                    <p>Color: <span style="background-color: <%= pet.color %>; padding: 5px; color: white; border-radius: 3px;"><%= pet.color %></span></p>
+                    <form action="/adoption/<%= pet._id %>/adopt" method="POST">
+                        <button type="submit">Adopt</button>
+                    </form>
+                </div>
+            <% }); %>
+        </ul>
+    <% } else { %>
+        <p>Sorry, there are no pets available for adoption right now. Check back later!</p>
+    <% } %>
+</body>
+</html>
