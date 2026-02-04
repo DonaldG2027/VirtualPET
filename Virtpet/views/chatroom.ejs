@@ -1,7 +1,28 @@
-<%- include('partials/header') %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boilroom o' plates header partial</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        #velcome {
+            border: 5px dashed;
+            border-color: darkseagreen;
+            color: #000000;
+            max-width: 670px;
+        }
+    </style>
+</head>
 <body>
     <a href="/"><button>Back to Map</button></a>
-    <p>Chatroom content goes here. Talk to other users so you aren't as lonely as you are in real life.</p>
+    <p id="velcome">Chatroom content goes here. Talk to other users so you aren't as lonely as you are in real life.</p>
     <br>
     <div id="chatroomMessages"></div>
     <form id="messagesForm">
