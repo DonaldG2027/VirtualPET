@@ -18,8 +18,8 @@
                     <p>Hunger: <%= pet.hunger %>/100</p>
                     <p>Joy: <%= pet.joy %>/100</p>
                     <p>Color: <span style="background-color: <%= pet.color %>; padding: 5px; color: white; border-radius: 3px;"><%= pet.color %></span></p>
-                    <form action="/adoption/<%= pet._id %>/adopt" method="POST">
-                        <button type="submit">Adopt</button>
+                    <form action="/adoption/<%= pet.apid %>/adopt" method="POST">
+                        <button type="submit">Adopt <%= pet.name %></button>
                     </form>
                 </div>
             <% }); %>

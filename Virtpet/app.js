@@ -374,7 +374,7 @@ if (sellresponse) {
     };
     res.redirect('/store');
 });
-app.get('/adopt', midAuth, (req, res) => {
+app.get('/adoption', midAuth, (req, res) => {
     // get the abandoned pets from database
     dbp.all('SELECT * FROM "abandoned pets"', (err, pets) => {
         if (err) {
@@ -386,6 +386,51 @@ app.get('/adopt', midAuth, (req, res) => {
         res.render('adoption', { user: req.session.user, pets: pets });
     });
 });
+app.post('/adoption/:petId/adopt', midAuth, (req, res) => {
+    const petId = req.params.petId;
+    const username = req.session.user;
+    
+    console.log(`Adoption request: User ${username} wants to adopt pet ID ${petId}`);
+    
+    // Get user ID first
+    dbp.get('SELECT id FROM users WHERE username = ?', [username], (err, user) => {
+        if (err || !user) {
+            logger.error('Error finding user for adoption:', err?.message);
+            return res.status(500).send('Error adopting pet');
+        }
+        
+        const userId = user.id;
+        
+        // Get the abandoned pet data
+        dbp.get('SELECT * FROM "abandoned pets" WHERE apid = ?', [petId], (err, pet) => {
+            if (err || !pet) {
+                logger.error('Error finding abandoned pet:', err?.message);
+                return res.status(500).send('Pet not found');
+            }
+            
+            // Insert into owned pets with new owner
+            dbp.run('INSERT INTO "owned pets" (name, hunger, joy, color, ownerid) VALUES (?, ?, ?, ?, ?)', 
+                [pet.name, pet.hunger, pet.joy, pet.color, userId], function(err) {
+                if (err) {
+                    logger.error('Error adopting pet:', err.message);
+                    return res.status(500).send('Error adopting pet');
+                }
+                
+                // Delete from abandoned pets
+                dbp.run('DELETE FROM "abandoned pets" WHERE apid = ?', [petId], function(err) {
+                    if (err) {
+                        logger.error('Error removing adopted pet from abandoned pets:', err.message);
+                        return res.status(500).send('Error completing adoption');
+                    }
+                    
+                    logger.info(`User ${username} adopted pet ${pet.name} (former apid: ${petId})`);
+                    res.redirect('/pet');
+                });
+            });
+        });
+    });
+});
+
 // feed pet route
 // Feed pet route
 app.post('/pet/feed', midAuth, (req, res) => {
