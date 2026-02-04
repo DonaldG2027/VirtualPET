@@ -374,6 +374,18 @@ if (sellresponse) {
     };
     res.redirect('/store');
 });
+app.get('/adopt', midAuth, (req, res) => {
+    // get the abandoned pets from database
+    dbp.all('SELECT * FROM "abandoned pets"', (err, pets) => {
+        if (err) {
+            logger.error('Error fetching abandoned pets:', err.message);
+            return res.status(500).send('Error fetching pets');
+        }
+        
+        // pass them to the adoption.ejs template to display
+        res.render('adoption', { user: req.session.user, pets: pets });
+    });
+});
 // feed pet route
 // Feed pet route
 app.post('/pet/feed', midAuth, (req, res) => {
@@ -449,6 +461,42 @@ app.post('/pet/color', midAuth, (req, res) => {
             
             logger.info(`Pet ${pet.name} color changed from ${pet.color} to ${newColor}`);
             res.redirect('/pet');
+        });
+    });
+});
+// abandon pet route
+app.post('/pet/abandon', midAuth, (req, res) => {
+    // get user id
+    const username = req.session.user;
+    dbp.get('SELECT id FROM users WHERE username = ?', [username], (err, user) => {
+        if (err || !user) {
+            logger.error('Error finding user for abandoning pet:', err?.message);
+            return res.status(500).send('Error abandoning pet');
+        }
+        const userId = user.id;
+        // find the pet
+        dbp.get('SELECT * FROM "owned pets" WHERE ownerid = ?', [userId], (err, pet) => {
+            if (err || !pet) {
+                logger.error('Error finding pet for abandonment:', err?.message);
+                return res.status(500).send('Error abandoning pet');
+            }
+            // insert into abandoned pets
+            dbp.run('INSERT INTO "abandoned pets" (name, hunger, joy, color) VALUES (?, ?, ?, ?)', 
+                [pet.name, pet.hunger, pet.joy, pet.color], function(err) {
+                if (err) {
+                    logger.error('Error inserting abandoned pet:', err.message);
+                    return res.status(500).send('Error abandoning pet');
+                }
+                // delete from owned pets
+                dbp.run('DELETE FROM "owned pets" WHERE ownerid = ?', [userId], function(err) {
+                    if (err) {
+                        logger.error('Error deleting owned pet:', err.message);
+                        return res.status(500).send('Error abandoning pet');
+                    }
+                    logger.info(`User ${username} abandoned their pet ${pet.name}`);
+                    res.redirect('/profile');
+                });
+            });
         });
     });
 });
