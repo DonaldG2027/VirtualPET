@@ -4,43 +4,233 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doc's Funhouse!</title>
-    <style>
+   <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            margin-top: 50px;
-            position:relative;
+           
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
         }
-        #Doc {
-            margin-top: 20px;
-            width: 300px;
-            height: auto;
-            position: absolute;
-            top: 450px;
-            right: 320px;
-        }
-        #linkback {
-            position: absolute;
-            top: 700px;
-            left: 750px;
-            color: blue;
 
+        /* Main content container */
+        .content-container {
+            max-width: 800px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            
         }
-    </style>
+
+        /* Header styles */
+        h1, h3 {
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin: 0; 
+        }
+
+        h1 {
+            font-size: clamp(24px, 4vw, 36px);
+        }
+
+        h3 {
+            font-size: clamp(20px, 3vw, 28px);
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: clamp(16px, 2.5vw, 20px);
+            color: #fff;
+            margin: 5; 
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        /* Form styling */
+        #punForm {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px; 
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 0;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            margin: 0; 
+        }
+
+        #answer {
+            font-size: clamp(14px, 2vw, 18px);
+            border: 2px solid #ddd;
+            border-radius: 0;
+            width: 100%;
+            max-width: 300px;
+            text-align: center;
+            transition: border-color 0.3s ease;
+            margin: 0; 
+            padding: 12px 20px; 
+        }
+
+        #answer:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 8px rgba(102, 126, 234, 0.3);
+        }
+
+        #punsub {
+            font-size: clamp(14px, 2vw, 18px);
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            margin: 0; 
+            padding: 12px 30px; 
+        }
+
+        #punsub:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        #punsub:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Result message */
+        #result {
+            font-size: clamp(16px, 2.5vw, 20px);
+            font-weight: bold;
+            border-radius: 0;
+            background-color: transparent;
+            min-height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            margin: 0; 
+            padding: 0; 
+        }
+
+        /* Doctor image - centered and responsive */
+        #Doc {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            border-radius: 0;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+            margin: 0; 
+        }
+
+        /* Back button */
+        .back-link {
+            margin: 10px; 
+        }
+
+        .back-link button {
+            padding: 12px 24px;
+            font-size: clamp(14px, 2vw, 16px);
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            margin: 0; 
+        }
+
+        .back-link button:hover {
+            background-color: #ff5252;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        /* Responsive adjustments */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 0; 
+            }
+            
+            #punForm {
+                padding: 20px;
+                margin: 0; 
+            }
+            
+            #Doc {
+                max-width: 250px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            body {
+                padding: 0; 
+            }
+            
+            #punForm {
+                padding: 15px;
+            }
+            
+            #Doc {
+                max-width: 200px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            h3 {
+                font-size: 20px;
+            }
+        }
+
+        /* Fun animation for the doctor image */
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .correct-answer #Doc {
+            animation: bounce 2s ease-in-out;
+        }
+</style>
+
 </head>
 <body>
-   
-    <p><strong>Welcome to Doc's Funhouse! This is where the fun Begins!</strong></p>
-    <p>Answer the question correctly to win a prize of 5 money!</p>
-    <h3> What do you call a educated Hippo?</h3>
-    <form id="punForm" method="POST" action="/mingame2">
-        <input type="text" id="answer" name="answer" placeholder="Response Here" required>
-        <button type="submit" id="punsub">Submit</button>
-    </form>
-    <p id="result"></p>
-
-    <img id="Doc"src="https://www.shutterstock.com/shutterstock/photos/46116535/display_1500/stock-photo-crazy-doctor-isolated-over-white-46116535.jpg" alt="Crazy Doctor" >
-    <a href="/" id="linkback"><button>Back to Map</button></a>
+    <div class="content-container">
+        <p><strong>Welcome to Doc's Funhouse! This is where the fun Begins!</strong></p>
+        <p>Answer the question correctly to win a prize of 5 money!</p>
+        
+        <h3>What do you call an educated Hippo?</h3>
+        
+        <form id="punForm" method="POST" action="/mingame2">
+            <input type="text" id="answer" name="answer" placeholder="Response Here" required>
+            <button type="submit" id="punsub">Submit</button>
+        </form>
+        
+        <p id="result"></p>
+        
+        <img id="Doc" src="https://www.shutterstock.com/shutterstock/photos/46116535/display_1500/stock-photo-crazy-doctor-isolated-over-white-46116535.jpg" alt="Crazy Doctor">
+        
+        <div class="back-link">
+            <a href="/"><button>Back to Map</button></a>
+        </div>
+    </div>
 </body>
 <script>
     document.getElementById('punForm').addEventListener('submit', function(e) {
