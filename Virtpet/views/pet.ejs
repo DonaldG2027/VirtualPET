@@ -1,7 +1,26 @@
-<%- include('partials/header') %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boilroom o' plates header partial</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #ca7777;
+        }
+        #velcome {
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
 <body>
     <h1>Your Virtual Pet</h1>
-    <p>Hey there, <%= user %>! What do you want to do with your pet today?</p>
+    <p id="velcome">Hey there, <%= user %>! What do you want to do with your pet today?</p>
     <br>
     <% if (pet) { %>
         <div id="petDisplay">
@@ -42,7 +61,8 @@
         <p>You don't even have a pet yet, you idiot! Go create one in your <a href="/profile">profile.</p>
         <a href="/profile">Create it here</a>
     <% } %>
-    <br><br>
+    <br>
+    <br>
     <a href="/">Back to Home</a>
 </body>
 <script> 
