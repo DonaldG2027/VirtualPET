@@ -103,7 +103,11 @@ app.get('/login', (req, res) => {
                 logger.error(err.message);
             }
             logger.info(`User ${tokenData.displayName} added to database or already exists.`);});
-        
+        dbp.run('INSERT OR IGNORE INTO users (username,passwordHash,formbarId,lastupdate) VALUES (?, ?, ?, ?)', [tokenData.displayName, null, tokenData.id, curtime], function (err) {
+            if (err) {
+                logger.error(err.message);
+            }
+            logger.info(`User ${tokenData.displayName} added to pets database or already exists.`);});
             res.redirect('/');
         } else {
         res.redirect(`${AUTH_URL}/oauth?redirectURL=${THIS_URL}`);
@@ -122,7 +126,11 @@ app.post('/login', (req, res) => {
                 logger.error(err.message);
             }
             logger.info(`User ${tokenData.displayName} added to database or already exists.`);});
-        
+    dbp.run('INSERT OR IGNORE INTO users (username,passwordHash,formbarId,lastupdate) VALUES (?, ?, ?, ?)', [username1, null, formbarId, curtime], function (err) {
+            if (err) {
+                logger.error(err.message);
+            }
+            logger.info(`User ${username1} added to pets database or already exists.`);});
             res.redirect('/');
         }
     else { logger.error('Formbar ID is required');}
