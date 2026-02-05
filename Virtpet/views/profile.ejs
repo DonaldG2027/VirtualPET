@@ -1,10 +1,10 @@
 <%- include('partials/header') %>
 <body>
-    <p style="font-weight: bold; color: #333;">Hallo!!! Youse name shalt be <%= user %>! Let us maketh this pet!</p>
+    <p style="font-weight: bold; font-family: 'Georgia', serif; color: #333;">Hallo!!! Youse name shalt be <%= user %>! Let us maketh this pet!</p>
     <!-- pet creation form -->
     <% if (pet) { %>
         <!--display pet stats-->
-        <p>You already made a pet, silly! Go play with <a href="/pet"><%= pet.name %></a>.</p>
+        <p style="font-family: 'Georgia', serif;">You already made a pet, silly! Go play with <a href="/pet"><%= pet.name %></a>.</p>
     <% } else { %>
         <p>You do not have a pet yet. Please create one below.</p>
     <form id="createPet" action="/profile" method="POST" >
