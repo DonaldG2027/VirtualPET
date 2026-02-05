@@ -4,12 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adoption</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #velcome {
+            color: #e28d1e;
+        }
+        #showp {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color:rgb(129, 202, 56);
+        }
+        #apology {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        #back-to-map {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+        }
+        #back-to-map:hover {
+            background-color: #2980b9;
+        }
+    </style>
 </head>
 <body>
-    <h1>Hey there, <%= user %>! Wanna adopt a pet?</h1>
+    <h1 id="velcome">Hey there, <%= user %>! Wanna adopt a pet?</h1>
 
     <% if (pets && pets.length > 0) { %>
-        <p>Here are some pets available for adoption:</p>
+        <p id="showp">Here are some pets available for adoption:</p>
         <ul>
             <% pets.forEach(function(pet) { %>
                 <div style="border: 1px solid #ccc; margin: 10px; padding: 10px;">
@@ -25,7 +54,8 @@
             <% }); %>
         </ul>
     <% } else { %>
-        <p>Sorry, there are no pets available for adoption right now. Check back later!</p>
+        <p id="apology">Sorry, there are no pets available for adoption right now. Check back later!</p>
     <% } %>
+    <a id="back-to-map" href="/">Back to Map</a>
 </body>
 </html>
