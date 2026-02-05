@@ -401,7 +401,7 @@ app.post('/adoption/:petId/adopt', midAuth, (req, res) => {
         
         const userId = user.id;
         
-        // Get the abandoned pet data
+        // Getting the abandoned pet data
         dbp.get('SELECT * FROM "abandoned pets" WHERE apid = ?', [petId], (err, pet) => {
             if (err || !pet) {
                 logger.error('Error finding abandoned pet:', err?.message);
@@ -416,7 +416,7 @@ app.post('/adoption/:petId/adopt', midAuth, (req, res) => {
                     return res.status(500).send('Error adopting pet');
                 }
                 
-                // Delete from abandoned pets
+                // Delete the pet from abandoned pets table
                 dbp.run('DELETE FROM "abandoned pets" WHERE apid = ?', [petId], function(err) {
                     if (err) {
                         logger.error('Error removing adopted pet from abandoned pets:', err.message);
