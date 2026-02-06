@@ -38,7 +38,7 @@
     <h1 id="velcome">Hey there, <%= user %>! Wanna adopt a pet?</h1>
 
     <% if (pets && pets.length > 0) { %>
-        <p id="showp">Here are some pets available for adoption:</p>
+        <p id="showp">Here are some pets available for adoption(Don't try to adpot pets if you already have one will send new pet to void):</p>
         <ul>
             <% pets.forEach(function(pet) { %>
                 <div style="border: 1px solid #ccc; margin: 10px; padding: 10px;">
