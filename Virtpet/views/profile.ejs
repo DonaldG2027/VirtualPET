@@ -1,6 +1,11 @@
 <%- include('partials/header') %>
 <body>
     <p style="font-weight: bold; color: #333;">Hallo!!! Youse name shalt be <%= user %>! Let us maketh this pet!</p>
+    <!-- money -->
+    <div style="margin: 15px 0; padding: 10px; background-color: #f0f8ff; border-radius: 5px;">
+        <h3>💰 Your Wallet</h3>
+        <p><strong>Money: </strong><span id="userMoney"><%= userMoney || 0 %></span></p>
+    </div>
     <!-- pet creation form -->
     <% if (pet) { %>
         <!--display pet stats-->
@@ -14,7 +19,16 @@
         <input type="submit" value="Create Pet">
     </form>
     <% } %>
-    <p style="font-style: italic;">P.S</p>
+    <p style="font-style: italic;">P.S. Want to refer a friend? Do so below:</p>
+    <div style="margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px;">
+        <h3>Refer your idiot friends!</h3>
+        <p>Get 1 money for each of them that you refer!</p>
+        <form action="/profile/referral" method="POST">
+            <label for="friendEmail">Friend's Email:</label>
+            <input type="email" id="friendEmail" name="friendEmail" required>
+            <button type="submit">Send Referral (+1 Money)</button>
+        </form>
+    </div>
     <br>
     <br>
     <a href="/">Back to Home</a>

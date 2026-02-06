@@ -75,6 +75,20 @@ app.use('/api', userapiroute)
 const midAuth = require('./middleware/isAuthenticated');
 //routes
 const mio = socketModule.createSocketServer(server, sessionMiddleware);
+app.get('/debug-real-refemail', (req, res) => {
+    // Try to describe the table structure
+    dbp.all("PRAGMA table_info(refemail)", (err, columns) => {
+        if (err) {
+            res.json({ error: err.message });
+        } else {
+            res.json({ 
+                columns: columns,
+                message: 'These are the actual columns in your refemail table'
+            });
+        }
+    });
+});
+
 app.get('/',midAuth, (req, res) => {
     const indexData = userLayout.getUserData(req.session);
     res.render('index', { user: req.session.user});
@@ -138,42 +152,46 @@ app.get('/profile', midAuth, (req, res) => {
     dbp.get('SELECT id FROM users WHERE username = ?', [username], (err, user) => {
         if (err || !user) {
             logger.error('Error finding user:', err?.message);
-            // Still render page but with no pet
-            dbu.all('SELECT * FROM Uploads', (err, uploads) => {
-                if (err) uploads = [];
-                const profileData = userLayout.getProfileData(req.session, uploads);
-                profileData.pet = null; // No pet if user not found
-                res.render('profile', profileData);
-            });
-            return;
+            // Still render page but with no pet/money
+            const profileData = userLayout.getProfileData(req.session, []);
+            profileData.pet = null;
+            profileData.userMoney = 0;
+            return res.render('profile', profileData);
         }
         
         // Get user's pet
         dbp.get('SELECT * FROM "owned pets" WHERE ownerid = ?', [user.id], (err, pet) => {
             if (err) {
                 logger.error('Pet query error:', err.message);
-                pet = null; // Set to null on error
+                pet = null;
             }
             
-            // Get uploads
-            dbu.all('SELECT * FROM Uploads', (err, uploads) => {
-                if (err) {
-                    logger.error('Uploads query error:', err.message);
-                    uploads = [];
-                }
+            // Get user's money from playerInv
+            dbp.get('SELECT money FROM playerInv WHERE iid = ?', [user.id], (err, inventory) => {
+                const userMoney = inventory ? inventory.money : 0;
                 
-                // Now pet is properly defined in this scope
-                const profileData = userLayout.getProfileData(req.session, uploads);
-                profileData.pet = pet; // This will work now
-                
-                console.log('Profile - Pet Data:', pet);
-                console.log('Profile - User:', req.session.user);
-                
-                res.render('profile', profileData);
+                // Get uploads
+                dbu.all('SELECT * FROM Uploads', (err, uploads) => {
+                    if (err) {
+                        logger.error('Uploads query error:', err.message);
+                        uploads = [];
+                    }
+                    
+                    const profileData = userLayout.getProfileData(req.session, uploads);
+                    profileData.pet = pet;
+                    profileData.userMoney = userMoney; // Add money to template data
+                    
+                    console.log('Profile - Pet Data:', pet);
+                    console.log('Profile - User Money:', userMoney);
+                    console.log('Profile - User:', req.session.user);
+                    
+                    res.render('profile', profileData);
+                });
             });
         });
     });
 });
+
 
 // handling creating the pets
 app.post('/profile', (req, res) => {
@@ -434,13 +452,16 @@ app.post('/adoption/:petId/adopt', midAuth, (req, res) => {
 // feed pet route
 // Feed pet route
 app.post('/pet/feed', midAuth, (req, res) => {
-    dbp.get('SELECT * FROM "owned pets" LIMIT 1', (err, pet) => {
+    const username = req.session.user;
+    
+    // Get user's specific pet, not just the first pet in database
+    dbp.get('SELECT u.id, p.* FROM users u JOIN "owned pets" p ON u.id = p.ownerid WHERE u.username = ?', 
+        [username], (err, pet) => {
         if (err || !pet) {
-            logger.error('Error finding pet:', err?.message);
+            logger.error('Error finding user\'s pet:', err?.message);
             return res.status(500).send('Pet not found');
         }
         
-        // Increase hunger (max 100)
         const newHunger = Math.min(pet.hunger + 20, 100);
         
         dbp.run('UPDATE "owned pets" SET hunger = ? WHERE pid = ?', 
@@ -451,14 +472,18 @@ app.post('/pet/feed', midAuth, (req, res) => {
             }
             
             logger.info(`Pet ${pet.name} fed. Hunger: ${pet.hunger} -> ${newHunger}`);
-            res.redirect('/pet'); // Redirect back to pet page
+            res.redirect('/pet');
         });
     });
 });
-
+    
 // Play with pet route  
 app.post('/pet/play', midAuth, (req, res) => {
-    dbp.get('SELECT * FROM "owned pets" LIMIT 1', (err, pet) => {
+    const username = req.session.user;
+    
+    // Get user's specific pet, not just the first pet in database
+    dbp.get('SELECT u.id, p.* FROM users u JOIN "owned pets" p ON u.id = p.ownerid WHERE u.username = ?', 
+        [username], (err, pet) => {
         if (err || !pet) {
             logger.error('Error finding pet:', err?.message);
             return res.status(500).send('Pet not found');
@@ -581,6 +606,63 @@ app.post('/mingame2', midAuth, (req, res) => {
                 logger.info(`User ${uid} answered correctly and earned 5 money!`);
             });
     }
+});
+// referral route
+app.post('/profile/referral', midAuth, (req, res) => {
+    const friendEmail = req.body.friendEmail;
+    const username = req.session.user;
+    
+    // Get user ID first
+    dbp.get('SELECT id FROM users WHERE username = ?', [username], (err, user) => {
+        if (err || !user) {
+            logger.error('Error finding user for referral:', err?.message);
+            return res.status(500).send('Error processing referral');
+        }
+        
+        const userId = user.id;
+        
+        // Insert referral email into refemail table
+        dbp.run('INSERT INTO refemail (emali, rid) VALUES (?, ?)', 
+            [friendEmail, userId], function(err) {
+            if (err) {
+                logger.error('Error saving referral:', err.message);
+                return res.status(500).send('Error saving referral: ' + err.message);
+            }
+            
+            // Now add money to playerInv
+            dbp.get('SELECT * FROM playerInv WHERE iid = ?', [userId], (err, inventory) => {
+                if (err) {
+                    logger.error('Error checking player inventory:', err.message);
+                    return res.status(500).send('Error updating money');
+                }
+                
+                if (!inventory) {
+                    // Create new playerInv record
+                    dbp.run('INSERT INTO playerInv (iid, money) VALUES (?, ?)', 
+                        [userId, 1], function(err) {
+                        if (err) {
+                            logger.error('Error creating player inventory:', err.message);
+                            return res.status(500).send('Error creating inventory');
+                        }
+                        logger.info(`User ${username} earned 1 money! New inventory created with 1 money`);
+                        res.redirect('/profile');
+                    });
+                } else {
+                    // Update existing money
+                    const newMoney = inventory.money + 1;
+                    dbp.run('UPDATE playerInv SET money = ? WHERE iid = ?', 
+                        [newMoney, userId], function(err) {
+                        if (err) {
+                            logger.error('Error updating money:', err.message);
+                            return res.status(500).send('Error updating money');
+                        }
+                        logger.info(`User ${username} earned 1 money! Total: ${newMoney}`);
+                        res.redirect('/profile');
+                    });
+                }
+            });
+        });
+    });
 });
 //socket.io setup
 io.on('connection', (socket) => {
