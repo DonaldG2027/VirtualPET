@@ -14,12 +14,30 @@
         }
         #velcome {
             font-weight: bold;
+            border: 5px dashed;
             color: #333;
+            width: 550px;
+        }
+         #petHeader {
+            color: #ca7777;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+        #velcome {
+            font-weight: bold;
+            color: #333;
+            width: 550px;
+        }
+        #petDisplay {
+            border: 2px solid #ccc;
+            padding: 15px;
+            border-radius: 5px;
+            width: 300px;
         }
     </style>
 </head>
 <body>
-    <h1>Your Virtual Pet</h1>
+    <h1 id="petHeader">Your Virtual Pet</h1>
     <p id="velcome">Hey there, <%= user %>! What do you want to do with your pet today?</p>
     <br>
     <% if (pet) { %>
